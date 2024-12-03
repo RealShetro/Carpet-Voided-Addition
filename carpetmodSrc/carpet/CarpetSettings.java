@@ -1331,7 +1331,7 @@ public class CarpetSettings
      */
 
     //Bjoel2 rules
-    @Rule(desc = "Right click on villager to view it's inventory", category = {VOIDED, CREATIVE})
+    @Rule(desc = "Right click on villager to view it's inventory (use this only for debug on cmp)", category = {VOIDED, CREATIVE})
     public static boolean viewVillagerInventory = false;
 
     @Rule(desc = "Adds chat tweaks such as !seed, !cords, !ncords, !ocords", category = {VOIDED, SURVIVAL})

@@ -16,7 +16,7 @@ Yes.
 
 ### Carpet Rules
 #### viewVillagerInventory
-- Description: `Right click on villager to view it's inventory`
+- Description: `Right click on villager to view it's inventory (use this only for debug on cmp)`
 - Type: `Boolean`
 - Default: `false`
 - Suggestions: `true`, `false`
