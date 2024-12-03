@@ -1,6 +1,9 @@
 # Carpet Mod
 Yes.
 
+## Note
+- this version (0.1.0) was based on Carpet-Vastech-Addition 0.1.5.12
+
 ## Additions from [Voided server](https://discord.com/invite/P8naD2wBc7)
 
 ### Shetro
