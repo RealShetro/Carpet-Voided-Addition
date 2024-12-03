@@ -5,6 +5,7 @@ Yes.
 
 ### Shetro
 
+- Chatbridge should have been added, but I'm too lazy to deal with the original author's license.
 - [Syncmatica](https://github.com/RealShetro/syncmatica-1.12) protocol support
 
 ### Bjoel2
