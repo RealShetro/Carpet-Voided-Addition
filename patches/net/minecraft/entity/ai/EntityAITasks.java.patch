@@ -1,0 +1,151 @@
+--- ../src-base/minecraft/net/minecraft/entity/ai/EntityAITasks.java
++++ ../src-work/minecraft/net/minecraft/entity/ai/EntityAITasks.java
+@@ -1,23 +1,32 @@
+ package net.minecraft.entity.ai;
+ 
++import carpet.logging.LoggerRegistry;
+ import com.google.common.collect.Sets;
+ import java.util.Iterator;
+ import java.util.Set;
+ import javax.annotation.Nullable;
++
++import net.minecraft.entity.Entity;
+ import net.minecraft.profiler.Profiler;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+ 
++import static carpet.logging.logHelpers.EntityTaskHelper.*;
++
+ public class EntityAITasks
+ {
+     private static final Logger field_151506_a = LogManager.getLogger();
+     private final Set<EntityAITasks.EntityAITaskEntry> field_75782_a = Sets.<EntityAITasks.EntityAITaskEntry>newLinkedHashSet();
+-    private final Set<EntityAITasks.EntityAITaskEntry> field_75780_b = Sets.<EntityAITasks.EntityAITaskEntry>newLinkedHashSet();
++    // VasCM - changed access
++    public final Set<EntityAITasks.EntityAITaskEntry> field_75780_b = Sets.<EntityAITasks.EntityAITaskEntry>newLinkedHashSet();
+     private final Profiler field_75781_c;
+     private int field_75778_d;
+     private int field_75779_e = 3;
+     private int field_188529_g;
+ 
++    // VasCM - entity task logger
++    public Entity trackedEntity;
++
+     public EntityAITasks(Profiler p_i1628_1_)
+     {
+         this.field_75781_c = p_i1628_1_;
+@@ -60,22 +69,27 @@
+         {
+             for (EntityAITasks.EntityAITaskEntry entityaitasks$entityaitaskentry : this.field_75782_a)
+             {
++                if(carpet.carpetclient.CarpetClientChunkLogger.logger.enabled)
++                    carpet.carpetclient.CarpetClientChunkLogger.setReason("Entity" + entityaitasks$entityaitaskentry.field_75733_a.getTask());
+                 if (entityaitasks$entityaitaskentry.field_188524_c)
+                 {
+-                    if (!this.func_75775_b(entityaitasks$entityaitaskentry) || !this.func_75773_a(entityaitasks$entityaitaskentry))
++                    if (!this.isTaskCompatible(entityaitasks$entityaitaskentry, true) || !this.func_75773_a(entityaitasks$entityaitaskentry))
+                     {
+                         entityaitasks$entityaitaskentry.field_188524_c = false;
+                         entityaitasks$entityaitaskentry.field_75733_a.func_75251_c();
+                         this.field_75780_b.remove(entityaitasks$entityaitaskentry);
+                     }
+                 }
+-                else if (this.func_75775_b(entityaitasks$entityaitaskentry) && entityaitasks$entityaitaskentry.field_75733_a.func_75250_a())
++                else if (this.isTaskCompatible(entityaitasks$entityaitaskentry, false) && entityaitasks$entityaitaskentry.field_75733_a.func_75250_a())
+                 {
++                    if (LoggerRegistry.__entityTask) onTaskStart(trackedEntity, entityaitasks$entityaitaskentry.field_75733_a);
+                     entityaitasks$entityaitaskentry.field_188524_c = true;
+                     entityaitasks$entityaitaskentry.field_75733_a.func_75249_e();
+                     this.field_75780_b.add(entityaitasks$entityaitaskentry);
++
+                 }
+             }
++            carpet.carpetclient.CarpetClientChunkLogger.resetReason();
+         }
+         else
+         {
+@@ -102,8 +116,12 @@
+ 
+             for (EntityAITasks.EntityAITaskEntry entityaitasks$entityaitaskentry2 : this.field_75780_b)
+             {
++                if(carpet.carpetclient.CarpetClientChunkLogger.logger.enabled)
++                    carpet.carpetclient.CarpetClientChunkLogger.setReason("Entity" + entityaitasks$entityaitaskentry2.field_75733_a.getTask());
++                
+                 entityaitasks$entityaitaskentry2.field_75733_a.func_75246_d();
+             }
++            carpet.carpetclient.CarpetClientChunkLogger.resetReason();
+ 
+             this.field_75781_c.func_76319_b();
+         }
+@@ -111,33 +129,46 @@
+ 
+     private boolean func_75773_a(EntityAITasks.EntityAITaskEntry p_75773_1_)
+     {
+-        return p_75773_1_.field_75733_a.func_75253_b();
++        // vanilla
++//        return taskEntry.action.shouldContinue();
++        // VasCM
++        boolean result = p_75773_1_.field_75733_a.func_75253_b();
++        if (!result) onTaskTerminated(trackedEntity, p_75773_1_.field_75733_a);
++        return result;
+     }
+ 
+-    private boolean func_75775_b(EntityAITasks.EntityAITaskEntry p_75775_1_)
++    // VasCM
++    private boolean isTaskCompatible(EntityAITasks.EntityAITaskEntry taskEntry) {
++        return isTaskCompatible(taskEntry, false);
++    }
++
++    private boolean isTaskCompatible(EntityAITasks.EntityAITaskEntry taskEntry, boolean log)
+     {
+         if (this.field_75780_b.isEmpty())
+         {
+             return true;
+         }
+-        else if (this.func_188528_b(p_75775_1_.field_75733_a.func_75247_h()))
++        else if (this.func_188528_b(taskEntry.field_75733_a.func_75247_h()))
+         {
++            if (log && LoggerRegistry.__entityTask) onTaskInterrupted(trackedEntity, taskEntry.field_75733_a, field_188529_g & taskEntry.field_75733_a.func_75247_h());
+             return false;
+         }
+         else
+         {
+-            for (EntityAITasks.EntityAITaskEntry entityaitasks$entityaitaskentry : this.field_75780_b)
++            for (EntityAITasks.EntityAITaskEntry otherTask : this.field_75780_b)
+             {
+-                if (entityaitasks$entityaitaskentry != p_75775_1_)
++                if (otherTask != taskEntry)
+                 {
+-                    if (p_75775_1_.field_75731_b >= entityaitasks$entityaitaskentry.field_75731_b)
++                    if (taskEntry.field_75731_b >= otherTask.field_75731_b)
+                     {
+-                        if (!this.func_75777_a(p_75775_1_, entityaitasks$entityaitaskentry))
++                        if (!this.func_75777_a(taskEntry, otherTask))
+                         {
++                            if (log && LoggerRegistry.__entityTask) onTaskInterrupted(trackedEntity, taskEntry.field_75733_a,
++                                    taskEntry.field_75733_a.func_75247_h() & otherTask.field_75733_a.func_75247_h());
+                             return false;
+                         }
+                     }
+-                    else if (!entityaitasks$entityaitaskentry.field_75733_a.func_75252_g())
++                    else if (!otherTask.field_75733_a.func_75252_g())
+                     {
+                         return false;
+                     }
+@@ -147,6 +178,7 @@
+             return true;
+         }
+     }
++    // VasCM - end
+ 
+     private boolean func_75777_a(EntityAITasks.EntityAITaskEntry p_75777_1_, EntityAITasks.EntityAITaskEntry p_75777_2_)
+     {
+@@ -180,7 +212,7 @@
+         }
+     }
+ 
+-    class EntityAITaskEntry
++    public class EntityAITaskEntry
+     {
+         public final EntityAIBase field_75733_a;
+         public final int field_75731_b;

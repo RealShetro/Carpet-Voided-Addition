@@ -1,0 +1,82 @@
+--- ../src-base/minecraft/net/minecraft/block/BlockObserver.java
++++ ../src-work/minecraft/net/minecraft/block/BlockObserver.java
+@@ -8,6 +8,7 @@
+ import net.minecraft.block.state.IBlockState;
+ import net.minecraft.creativetab.CreativeTabs;
+ import net.minecraft.entity.EntityLivingBase;
++import net.minecraft.init.Blocks;
+ import net.minecraft.util.EnumFacing;
+ import net.minecraft.util.Mirror;
+ import net.minecraft.util.Rotation;
+@@ -15,7 +16,12 @@
+ import net.minecraft.world.IBlockAccess;
+ import net.minecraft.world.World;
+ 
+-public class BlockObserver extends BlockDirectional
++import redstone.multimeter.block.Meterable;
++import redstone.multimeter.block.PowerSource;
++
++import carpet.CarpetSettings;
++
++public class BlockObserver extends BlockDirectional implements Meterable /* RSMM */, PowerSource /* RSMM */
+ {
+     public static final PropertyBool field_190963_a = PropertyBool.func_177716_a("powered");
+ 
+@@ -74,7 +80,18 @@
+         {
+             if (!p_190960_2_.func_184145_b(p_190960_3_, this))
+             {
+-                p_190960_2_.func_175684_a(p_190960_3_, this, 2);
++                int delay = 2;
++                if(CarpetSettings.observerPoweredTerracotta){
++                    EnumFacing enumfacing = p_190960_1_.func_177229_b(field_176387_N);
++                    BlockPos blockpos = p_190960_3_.func_177972_a(enumfacing.func_176734_d());
++                    IBlockState iblockstate = p_190960_2_.func_180495_p(blockpos);
++                    Block block = iblockstate.func_177230_c();
++                    if (block == Blocks.field_150406_ce){
++                        delay = block.func_176201_c(iblockstate);
++                        if(delay == 0) delay = 100;
++                    }
++                }
++                p_190960_2_.func_175684_a(p_190960_3_, this, delay);
+             }
+         }
+     }
+@@ -125,7 +142,12 @@
+ 
+     public IBlockState func_180642_a(World p_180642_1_, BlockPos p_180642_2_, EnumFacing p_180642_3_, float p_180642_4_, float p_180642_5_, float p_180642_6_, int p_180642_7_, EntityLivingBase p_180642_8_)
+     {
+-        return this.func_176223_P().func_177226_a(field_176387_N, EnumFacing.func_190914_a(p_180642_2_, p_180642_8_).func_176734_d());
++        /*
++         * Made observer not send a signal when placed. CARPET-XCOM
++         */
++      //return this.getDefaultState().withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer).getOpposite());
++        return this.func_176223_P().func_177226_a(field_176387_N, EnumFacing.func_190914_a(p_180642_2_, p_180642_8_).func_176734_d()).func_177226_a(field_190963_a, CarpetSettings.observersDoNonUpdate);
++
+     }
+ 
+     public int func_176201_c(IBlockState p_176201_1_)
+@@ -143,6 +165,22 @@
+ 
+     public IBlockState func_176203_a(int p_176203_1_)
+     {
+-        return this.func_176223_P().func_177226_a(field_176387_N, EnumFacing.func_82600_a(p_176203_1_ & 7));
++        // VasCM - setBlockCanPlaceLitObservers
++        if (!CarpetSettings.setBlockCanPlaceLitObservers)
++            return this.func_176223_P().func_177226_a(field_176387_N, EnumFacing.func_82600_a(p_176203_1_ & 7)); // vanilla
++        else
++            return this.func_176223_P().func_177226_a(field_176387_N, EnumFacing.func_82600_a(p_176203_1_ & 7)).func_177226_a(field_190963_a, (p_176203_1_ & 8) != 0); // carpet
+     }
++
++    // RSMM
++    @Override
++    public boolean isActive(World world, BlockPos pos, IBlockState state) {
++        return state.func_177229_b(field_190963_a);
++    }
++
++    // RSMM
++    @Override
++    public int getPowerLevel(World world, BlockPos pos, IBlockState state) {
++        return state.func_177229_b(field_190963_a) ? MAX_POWER : MIN_POWER;
++    }
+ }

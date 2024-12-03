@@ -1,0 +1,52 @@
+--- ../src-base/minecraft/net/minecraft/world/gen/feature/WorldGenEndGateway.java
++++ ../src-work/minecraft/net/minecraft/world/gen/feature/WorldGenEndGateway.java
+@@ -7,34 +7,34 @@
+ 
+ public class WorldGenEndGateway extends WorldGenerator
+ {
+-    public boolean func_180709_b(World p_180709_1_, Random p_180709_2_, BlockPos p_180709_3_)
++    public boolean generate_vanilla(World worldIn, Random rand, BlockPos position)
+     {
+-        for (BlockPos.MutableBlockPos blockpos$mutableblockpos : BlockPos.func_177975_b(p_180709_3_.func_177982_a(-1, -2, -1), p_180709_3_.func_177982_a(1, 2, 1)))
++        for (BlockPos.MutableBlockPos blockpos$mutableblockpos : BlockPos.func_177975_b(position.func_177982_a(-1, -2, -1), position.func_177982_a(1, 2, 1)))
+         {
+-            boolean flag = blockpos$mutableblockpos.func_177958_n() == p_180709_3_.func_177958_n();
+-            boolean flag1 = blockpos$mutableblockpos.func_177956_o() == p_180709_3_.func_177956_o();
+-            boolean flag2 = blockpos$mutableblockpos.func_177952_p() == p_180709_3_.func_177952_p();
+-            boolean flag3 = Math.abs(blockpos$mutableblockpos.func_177956_o() - p_180709_3_.func_177956_o()) == 2;
++            boolean sameX = blockpos$mutableblockpos.func_177958_n() == position.func_177958_n();
++            boolean sameY = blockpos$mutableblockpos.func_177956_o() == position.func_177956_o();
++            boolean sameZ = blockpos$mutableblockpos.func_177952_p() == position.func_177952_p();
++            boolean borderY = Math.abs(blockpos$mutableblockpos.func_177956_o() - position.func_177956_o()) == 2;
+ 
+-            if (flag && flag1 && flag2)
++            if (sameX && sameY && sameZ)
+             {
+-                this.func_175903_a(p_180709_1_, new BlockPos(blockpos$mutableblockpos), Blocks.field_185775_db.func_176223_P());
++                this.func_175903_a(worldIn, new BlockPos(blockpos$mutableblockpos), Blocks.field_185775_db.func_176223_P());
+             }
+-            else if (flag1)
++            else if (sameY)
+             {
+-                this.func_175903_a(p_180709_1_, blockpos$mutableblockpos, Blocks.field_150350_a.func_176223_P());
++                this.func_175903_a(worldIn, blockpos$mutableblockpos, Blocks.field_150350_a.func_176223_P());
+             }
+-            else if (flag3 && flag && flag2)
++            else if (borderY && sameX && sameZ)
+             {
+-                this.func_175903_a(p_180709_1_, blockpos$mutableblockpos, Blocks.field_150357_h.func_176223_P());
++                this.func_175903_a(worldIn, blockpos$mutableblockpos, Blocks.field_150357_h.func_176223_P());
+             }
+-            else if ((flag || flag2) && !flag3)
++            else if ((sameX || sameZ) && !borderY)
+             {
+-                this.func_175903_a(p_180709_1_, blockpos$mutableblockpos, Blocks.field_150357_h.func_176223_P());
++                this.func_175903_a(worldIn, blockpos$mutableblockpos, Blocks.field_150357_h.func_176223_P());
+             }
+             else
+             {
+-                this.func_175903_a(p_180709_1_, blockpos$mutableblockpos, Blocks.field_150350_a.func_176223_P());
++                this.func_175903_a(worldIn, blockpos$mutableblockpos, Blocks.field_150350_a.func_176223_P());
+             }
+         }
+ 

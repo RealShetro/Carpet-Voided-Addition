@@ -1,0 +1,62 @@
+--- ../src-base/minecraft/net/minecraft/world/gen/feature/WorldGenSpikes.java
++++ ../src-work/minecraft/net/minecraft/world/gen/feature/WorldGenSpikes.java
+@@ -25,7 +25,7 @@
+         this.field_186145_a = p_186144_1_;
+     }
+ 
+-    public boolean func_180709_b(World p_180709_1_, Random p_180709_2_, BlockPos p_180709_3_)
++    public boolean generate_vanilla(World worldIn, Random rand, BlockPos position)
+     {
+         if (this.field_186146_b == null)
+         {
+@@ -35,15 +35,15 @@
+         {
+             int i = this.field_186146_b.func_186148_c();
+ 
+-            for (BlockPos.MutableBlockPos blockpos$mutableblockpos : BlockPos.func_177975_b(new BlockPos(p_180709_3_.func_177958_n() - i, 0, p_180709_3_.func_177952_p() - i), new BlockPos(p_180709_3_.func_177958_n() + i, this.field_186146_b.func_186149_d() + 10, p_180709_3_.func_177952_p() + i)))
++            for (BlockPos.MutableBlockPos blockpos$mutableblockpos : BlockPos.func_177975_b(new BlockPos(position.func_177958_n() - i, 0, position.func_177952_p() - i), new BlockPos(position.func_177958_n() + i, this.field_186146_b.func_186149_d() + 10, position.func_177952_p() + i)))
+             {
+-                if (blockpos$mutableblockpos.func_177954_c((double)p_180709_3_.func_177958_n(), (double)blockpos$mutableblockpos.func_177956_o(), (double)p_180709_3_.func_177952_p()) <= (double)(i * i + 1) && blockpos$mutableblockpos.func_177956_o() < this.field_186146_b.func_186149_d())
++                if (blockpos$mutableblockpos.func_177954_c((double)position.func_177958_n(), (double)blockpos$mutableblockpos.func_177956_o(), (double)position.func_177952_p()) <= (double)(i * i + 1) && blockpos$mutableblockpos.func_177956_o() < this.field_186146_b.func_186149_d())
+                 {
+-                    this.func_175903_a(p_180709_1_, blockpos$mutableblockpos, Blocks.field_150343_Z.func_176223_P());
++                    this.func_175903_a(worldIn, blockpos$mutableblockpos, Blocks.field_150343_Z.func_176223_P());
+                 }
+                 else if (blockpos$mutableblockpos.func_177956_o() > 65)
+                 {
+-                    this.func_175903_a(p_180709_1_, blockpos$mutableblockpos, Blocks.field_150350_a.func_176223_P());
++                    this.func_175903_a(worldIn, blockpos$mutableblockpos, Blocks.field_150350_a.func_176223_P());
+                 }
+             }
+ 
+@@ -55,22 +55,22 @@
+                     {
+                         if (MathHelper.func_76130_a(j) == 2 || MathHelper.func_76130_a(k) == 2)
+                         {
+-                            this.func_175903_a(p_180709_1_, new BlockPos(p_180709_3_.func_177958_n() + j, this.field_186146_b.func_186149_d(), p_180709_3_.func_177952_p() + k), Blocks.field_150411_aY.func_176223_P());
+-                            this.func_175903_a(p_180709_1_, new BlockPos(p_180709_3_.func_177958_n() + j, this.field_186146_b.func_186149_d() + 1, p_180709_3_.func_177952_p() + k), Blocks.field_150411_aY.func_176223_P());
+-                            this.func_175903_a(p_180709_1_, new BlockPos(p_180709_3_.func_177958_n() + j, this.field_186146_b.func_186149_d() + 2, p_180709_3_.func_177952_p() + k), Blocks.field_150411_aY.func_176223_P());
++                            this.func_175903_a(worldIn, new BlockPos(position.func_177958_n() + j, this.field_186146_b.func_186149_d(), position.func_177952_p() + k), Blocks.field_150411_aY.func_176223_P());
++                            this.func_175903_a(worldIn, new BlockPos(position.func_177958_n() + j, this.field_186146_b.func_186149_d() + 1, position.func_177952_p() + k), Blocks.field_150411_aY.func_176223_P());
++                            this.func_175903_a(worldIn, new BlockPos(position.func_177958_n() + j, this.field_186146_b.func_186149_d() + 2, position.func_177952_p() + k), Blocks.field_150411_aY.func_176223_P());
+                         }
+ 
+-                        this.func_175903_a(p_180709_1_, new BlockPos(p_180709_3_.func_177958_n() + j, this.field_186146_b.func_186149_d() + 3, p_180709_3_.func_177952_p() + k), Blocks.field_150411_aY.func_176223_P());
++                        this.func_175903_a(worldIn, new BlockPos(position.func_177958_n() + j, this.field_186146_b.func_186149_d() + 3, position.func_177952_p() + k), Blocks.field_150411_aY.func_176223_P());
+                     }
+                 }
+             }
+ 
+-            EntityEnderCrystal entityendercrystal = new EntityEnderCrystal(p_180709_1_);
++            EntityEnderCrystal entityendercrystal = new EntityEnderCrystal(worldIn);
+             entityendercrystal.func_184516_a(this.field_186147_c);
+             entityendercrystal.func_184224_h(this.field_186145_a);
+-            entityendercrystal.func_70012_b((double)((float)p_180709_3_.func_177958_n() + 0.5F), (double)(this.field_186146_b.func_186149_d() + 1), (double)((float)p_180709_3_.func_177952_p() + 0.5F), p_180709_2_.nextFloat() * 360.0F, 0.0F);
+-            p_180709_1_.func_72838_d(entityendercrystal);
+-            this.func_175903_a(p_180709_1_, new BlockPos(p_180709_3_.func_177958_n(), this.field_186146_b.func_186149_d(), p_180709_3_.func_177952_p()), Blocks.field_150357_h.func_176223_P());
++            entityendercrystal.func_70012_b((double)((float)position.func_177958_n() + 0.5F), (double)(this.field_186146_b.func_186149_d() + 1), (double)((float)position.func_177952_p() + 0.5F), rand.nextFloat() * 360.0F, 0.0F);
++            worldIn.func_72838_d(entityendercrystal);
++            this.func_175903_a(worldIn, new BlockPos(position.func_177958_n(), this.field_186146_b.func_186149_d(), position.func_177952_p()), Blocks.field_150357_h.func_176223_P());
+             return true;
+         }
+     }

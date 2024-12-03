@@ -1,0 +1,32 @@
+--- ../src-base/minecraft/net/minecraft/world/gen/structure/StructureNetherBridgePieces.java
++++ ../src-work/minecraft/net/minecraft/world/gen/structure/StructureNetherBridgePieces.java
+@@ -790,6 +790,29 @@
+                 if (p_74875_3_.func_175898_b(blockpos))
+                 {
+                     p_74875_1_.func_189507_a(blockpos, iblockstate, p_74875_2_);
++                    /*
++                    int dx, dz, px, pz;
++                    System.out.printf("Lava well populated at (%d,%d,%d) with pos in chunk (%d,%d)\n",
++                            px = blockpos.getX(), blockpos.getY(), pz = blockpos.getZ(),
++                            dx = px & 15, dz = pz & 15);
++                    int cx = (px - dx) / 16;
++                    int cz = (pz - dz) / 16;
++                    if (dx < 8) cx -= 1;
++                    if (dz < 8) cz -= 1;
++                    int validFireLocations = 0;
++                    BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
++                    for (dx = 0; dx < 16; dx ++) {
++                        for (dz = 0; dz < 16; dz ++) {
++                            pos.setPos(cx * 16 + dx, 127, cz * 16 + dz);
++                            while (pos.getY() > 0) {
++                                while (!worldIn.isAirBlock(pos)) pos.move(EnumFacing.DOWN);
++                                while (pos.getY() > 0 && worldIn.isAirBlock(pos)) pos.move(EnumFacing.DOWN);
++                                if (worldIn.getBlockState(pos).getBlock() == Blocks.NETHERRACK) validFireLocations ++;
++                            }
++                        }
++                    }
++                    System.out.printf("The population chunk (%d,%d) contains %d valid fire locations\n", cx, cz, validFireLocations);
++                    */
+                 }
+ 
+                 return true;

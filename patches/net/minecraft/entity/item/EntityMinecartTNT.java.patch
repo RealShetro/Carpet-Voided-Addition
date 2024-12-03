@@ -1,0 +1,12 @@
+--- ../src-base/minecraft/net/minecraft/entity/item/EntityMinecartTNT.java
++++ ../src-work/minecraft/net/minecraft/entity/item/EntityMinecartTNT.java
+@@ -122,7 +122,8 @@
+                 d0 = 5.0D;
+             }
+ 
+-            this.field_70170_p.func_72876_a(this, this.field_70165_t, this.field_70163_u, this.field_70161_v, (float)(4.0D + this.field_70146_Z.nextDouble() * 1.5D * d0), true);
++            this.field_70170_p.func_72876_a(this, this.field_70165_t, this.field_70163_u, this.field_70161_v,
++                    (float)(4.0D + this.field_70146_Z.nextDouble() * 1.5D * d0), true);
+             this.func_70106_y();
+         }
+     }

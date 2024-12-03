@@ -1,0 +1,354 @@
+--- ../src-base/minecraft/net/minecraft/world/gen/feature/WorldGenCanopyTree.java
++++ ../src-work/minecraft/net/minecraft/world/gen/feature/WorldGenCanopyTree.java
+@@ -23,35 +23,36 @@
+         super(p_i45461_1_);
+     }
+ 
+-    public boolean func_180709_b(World p_180709_1_, Random p_180709_2_, BlockPos p_180709_3_)
++    /*
++    public boolean generate_vanilla(World worldIn, Random rand, BlockPos position)
+     {
+-        int i = p_180709_2_.nextInt(3) + p_180709_2_.nextInt(2) + 6;
+-        int j = p_180709_3_.func_177958_n();
+-        int k = p_180709_3_.func_177956_o();
+-        int l = p_180709_3_.func_177952_p();
++        int i = rand.nextInt(3) + rand.nextInt(2) + 6;
++        int j = position.getX();
++        int k = position.getY();
++        int l = position.getZ();
+ 
+         if (k >= 1 && k + i + 1 < 256)
+         {
+-            BlockPos blockpos = p_180709_3_.func_177977_b();
+-            Block block = p_180709_1_.func_180495_p(blockpos).func_177230_c();
++            BlockPos blockpos = position.down();
++            Block block = worldIn.getBlockState(blockpos).getBlock();
+ 
+-            if (block != Blocks.field_150349_c && block != Blocks.field_150346_d)
++            if (block != Blocks.GRASS && block != Blocks.DIRT)
+             {
+                 return false;
+             }
+-            else if (!this.func_181638_a(p_180709_1_, p_180709_3_, i))
++            else if (!this.placeTreeOfHeight(worldIn, position, i))
+             {
+                 return false;
+             }
+             else
+             {
+-                this.func_175921_a(p_180709_1_, blockpos);
+-                this.func_175921_a(p_180709_1_, blockpos.func_177974_f());
+-                this.func_175921_a(p_180709_1_, blockpos.func_177968_d());
+-                this.func_175921_a(p_180709_1_, blockpos.func_177968_d().func_177974_f());
+-                EnumFacing enumfacing = EnumFacing.Plane.HORIZONTAL.func_179518_a(p_180709_2_);
+-                int i1 = i - p_180709_2_.nextInt(4);
+-                int j1 = 2 - p_180709_2_.nextInt(3);
++                this.setDirtAt(worldIn, blockpos);
++                this.setDirtAt(worldIn, blockpos.east());
++                this.setDirtAt(worldIn, blockpos.south());
++                this.setDirtAt(worldIn, blockpos.south().east());
++                EnumFacing enumfacing = EnumFacing.Plane.HORIZONTAL.random(rand);
++                int i1 = i - rand.nextInt(4);
++                int j1 = 2 - rand.nextInt(3);
+                 int k1 = j;
+                 int l1 = l;
+                 int i2 = k + i - 1;
+@@ -60,21 +61,21 @@
+                 {
+                     if (j2 >= i1 && j1 > 0)
+                     {
+-                        k1 += enumfacing.func_82601_c();
+-                        l1 += enumfacing.func_82599_e();
++                        k1 += enumfacing.getXOffset();
++                        l1 += enumfacing.getZOffset();
+                         --j1;
+                     }
+ 
+                     int k2 = k + j2;
+                     BlockPos blockpos1 = new BlockPos(k1, k2, l1);
+-                    Material material = p_180709_1_.func_180495_p(blockpos1).func_185904_a();
++                    Material material = worldIn.getBlockState(blockpos1).getMaterial();
+ 
+-                    if (material == Material.field_151579_a || material == Material.field_151584_j)
++                    if (material == Material.AIR || material == Material.LEAVES)
+                     {
+-                        this.func_181639_b(p_180709_1_, blockpos1);
+-                        this.func_181639_b(p_180709_1_, blockpos1.func_177974_f());
+-                        this.func_181639_b(p_180709_1_, blockpos1.func_177968_d());
+-                        this.func_181639_b(p_180709_1_, blockpos1.func_177974_f().func_177968_d());
++                        this.placeLogAt(worldIn, blockpos1);
++                        this.placeLogAt(worldIn, blockpos1.east());
++                        this.placeLogAt(worldIn, blockpos1.south());
++                        this.placeLogAt(worldIn, blockpos1.east().south());
+                     }
+                 }
+ 
+@@ -83,28 +84,28 @@
+                     for (int l3 = -2; l3 <= 0; ++l3)
+                     {
+                         int k4 = -1;
+-                        this.func_150526_a(p_180709_1_, k1 + i3, i2 + k4, l1 + l3);
+-                        this.func_150526_a(p_180709_1_, 1 + k1 - i3, i2 + k4, l1 + l3);
+-                        this.func_150526_a(p_180709_1_, k1 + i3, i2 + k4, 1 + l1 - l3);
+-                        this.func_150526_a(p_180709_1_, 1 + k1 - i3, i2 + k4, 1 + l1 - l3);
++                        this.placeLeafAt(worldIn, k1 + i3, i2 + k4, l1 + l3);
++                        this.placeLeafAt(worldIn, 1 + k1 - i3, i2 + k4, l1 + l3);
++                        this.placeLeafAt(worldIn, k1 + i3, i2 + k4, 1 + l1 - l3);
++                        this.placeLeafAt(worldIn, 1 + k1 - i3, i2 + k4, 1 + l1 - l3);
+ 
+                         if ((i3 > -2 || l3 > -1) && (i3 != -1 || l3 != -2))
+                         {
+                             k4 = 1;
+-                            this.func_150526_a(p_180709_1_, k1 + i3, i2 + k4, l1 + l3);
+-                            this.func_150526_a(p_180709_1_, 1 + k1 - i3, i2 + k4, l1 + l3);
+-                            this.func_150526_a(p_180709_1_, k1 + i3, i2 + k4, 1 + l1 - l3);
+-                            this.func_150526_a(p_180709_1_, 1 + k1 - i3, i2 + k4, 1 + l1 - l3);
++                            this.placeLeafAt(worldIn, k1 + i3, i2 + k4, l1 + l3);
++                            this.placeLeafAt(worldIn, 1 + k1 - i3, i2 + k4, l1 + l3);
++                            this.placeLeafAt(worldIn, k1 + i3, i2 + k4, 1 + l1 - l3);
++                            this.placeLeafAt(worldIn, 1 + k1 - i3, i2 + k4, 1 + l1 - l3);
+                         }
+                     }
+                 }
+ 
+-                if (p_180709_2_.nextBoolean())
++                if (rand.nextBoolean())
+                 {
+-                    this.func_150526_a(p_180709_1_, k1, i2 + 2, l1);
+-                    this.func_150526_a(p_180709_1_, k1 + 1, i2 + 2, l1);
+-                    this.func_150526_a(p_180709_1_, k1 + 1, i2 + 2, l1 + 1);
+-                    this.func_150526_a(p_180709_1_, k1, i2 + 2, l1 + 1);
++                    this.placeLeafAt(worldIn, k1, i2 + 2, l1);
++                    this.placeLeafAt(worldIn, k1 + 1, i2 + 2, l1);
++                    this.placeLeafAt(worldIn, k1 + 1, i2 + 2, l1 + 1);
++                    this.placeLeafAt(worldIn, k1, i2 + 2, l1 + 1);
+                 }
+ 
+                 for (int j3 = -3; j3 <= 4; ++j3)
+@@ -113,7 +114,7 @@
+                     {
+                         if ((j3 != -3 || i4 != -3) && (j3 != -3 || i4 != 4) && (j3 != 4 || i4 != -3) && (j3 != 4 || i4 != 4) && (Math.abs(j3) < 3 || Math.abs(i4) < 3))
+                         {
+-                            this.func_150526_a(p_180709_1_, k1 + j3, i2, l1 + i4);
++                            this.placeLeafAt(worldIn, k1 + j3, i2, l1 + i4);
+                         }
+                     }
+                 }
+@@ -122,20 +123,20 @@
+                 {
+                     for (int j4 = -1; j4 <= 2; ++j4)
+                     {
+-                        if ((k3 < 0 || k3 > 1 || j4 < 0 || j4 > 1) && p_180709_2_.nextInt(3) <= 0)
++                        if ((k3 < 0 || k3 > 1 || j4 < 0 || j4 > 1) && rand.nextInt(3) <= 0)
+                         {
+-                            int l4 = p_180709_2_.nextInt(3) + 2;
++                            int l4 = rand.nextInt(3) + 2;
+ 
+                             for (int i5 = 0; i5 < l4; ++i5)
+                             {
+-                                this.func_181639_b(p_180709_1_, new BlockPos(j + k3, i2 - i5 - 1, l + j4));
++                                this.placeLogAt(worldIn, new BlockPos(j + k3, i2 - i5 - 1, l + j4));
+                             }
+ 
+                             for (int j5 = -1; j5 <= 1; ++j5)
+                             {
+                                 for (int l2 = -1; l2 <= 1; ++l2)
+                                 {
+-                                    this.func_150526_a(p_180709_1_, k1 + k3 + j5, i2, l1 + j4 + l2);
++                                    this.placeLeafAt(worldIn, k1 + k3 + j5, i2, l1 + j4 + l2);
+                                 }
+                             }
+ 
+@@ -145,7 +146,7 @@
+                                 {
+                                     if (Math.abs(k5) != 2 || Math.abs(l5) != 2)
+                                     {
+-                                        this.func_150526_a(p_180709_1_, k1 + k3 + k5, i2 - 1, l1 + j4 + l5);
++                                        this.placeLeafAt(worldIn, k1 + k3 + k5, i2 - 1, l1 + j4 + l5);
+                                     }
+                                 }
+                             }
+@@ -161,7 +162,183 @@
+             return false;
+         }
+     }
++     */
+ 
++    // VasCM - renamed variables for better reading
++    public boolean generate_vanilla(World worldIn, Random rand, BlockPos position)
++    {
++        int height = rand.nextInt(3) + rand.nextInt(2) + 6;
++        int posX = position.func_177958_n();
++        int posY = position.func_177956_o();
++        int posZ = position.func_177952_p();
++
++        if (posY >= 1 && posY + height + 1 < 256)
++        {
++            BlockPos posDown = position.func_177977_b();
++            Block block = worldIn.func_180495_p(posDown).func_177230_c();
++
++            if (block != Blocks.field_150349_c && block != Blocks.field_150346_d)
++            {
++                return false;
++            }
++            else if (!this.func_181638_a(worldIn, position, height))
++            {
++                return false;
++            }
++            else
++            {
++                this.func_175921_a(worldIn, posDown);
++                this.func_175921_a(worldIn, posDown.func_177974_f());
++                this.func_175921_a(worldIn, posDown.func_177968_d());
++                this.func_175921_a(worldIn, posDown.func_177968_d().func_177974_f());
++                EnumFacing trunkSlant = EnumFacing.Plane.HORIZONTAL.func_179518_a(rand);
++                int straightTrunkHeight = height - rand.nextInt(4);
++                int offsetTrunkHeight = 2 - rand.nextInt(3);
++                int trunkX = posX;
++                int trunkZ = posZ;
++                int leafBaseY = posY + height - 1;
++
++                // place <straightTrunkHeight> layers of 2x2 log
++                // then place <offsetTrunkHeight> layers of 2x2 log, each layer offset to a predetermined random direction
++                for (int h = 0; h < height; ++h)
++                {
++                    if (h >= straightTrunkHeight && offsetTrunkHeight > 0)
++                    {
++                        trunkX += trunkSlant.func_82601_c();
++                        trunkZ += trunkSlant.func_82599_e();
++                        --offsetTrunkHeight;
++                    }
++
++                    int k2 = posY + h;
++                    BlockPos logPos = new BlockPos(trunkX, k2, trunkZ);
++                    Material material = worldIn.func_180495_p(logPos).func_185904_a();
++
++                    if (material == Material.field_151579_a || material == Material.field_151584_j)
++                    {
++                        this.func_181639_b(worldIn, logPos);
++                        this.func_181639_b(worldIn, logPos.func_177974_f());
++                        this.func_181639_b(worldIn, logPos.func_177968_d());
++                        this.func_181639_b(worldIn, logPos.func_177974_f().func_177968_d());
++                    }
++                }
++
++                // after this stage, <trunkX> <trunkZ> refers to the north-west corner of the highest layer of log
++                for (int leafXOffset = -2; leafXOffset <= 0; ++leafXOffset)
++                {
++                    for (int leafZOffset = -2; leafZOffset <= 0; ++leafZOffset)
++                    {
++                        // Leaf Part 1
++                        // place 6x6 leaves 1 block below <leafBaseY>
++                        int leafYOffset = -1;
++                        this.func_150526_a(worldIn, trunkX + leafXOffset, leafBaseY + leafYOffset, trunkZ + leafZOffset);
++                        this.func_150526_a(worldIn, 1 + trunkX - leafXOffset, leafBaseY + leafYOffset, trunkZ + leafZOffset);
++                        this.func_150526_a(worldIn, trunkX + leafXOffset, leafBaseY + leafYOffset, 1 + trunkZ - leafZOffset);
++                        this.func_150526_a(worldIn, 1 + trunkX - leafXOffset, leafBaseY + leafYOffset, 1 + trunkZ - leafZOffset);
++
++                        // Leaf Part 2
++                        /* place leaves 1 block above <leafBaseY> with following pattern: 0 = air, L = leaf, T = leaf directly above trunk
++                         * 0 0 L L 0 0
++                         * 0 L L L L 0
++                         * L L T T L L
++                         * L L T T L L
++                         * 0 L L L L 0
++                         * 0 0 L L 0 0
++                         */
++                        if ((leafXOffset > -2 || leafZOffset > -1) && (leafXOffset != -1 || leafZOffset != -2))
++                        {
++                            leafYOffset = 1;
++                            this.func_150526_a(worldIn, trunkX + leafXOffset, leafBaseY + leafYOffset, trunkZ + leafZOffset);
++                            this.func_150526_a(worldIn, 1 + trunkX - leafXOffset, leafBaseY + leafYOffset, trunkZ + leafZOffset);
++                            this.func_150526_a(worldIn, trunkX + leafXOffset, leafBaseY + leafYOffset, 1 + trunkZ - leafZOffset);
++                            this.func_150526_a(worldIn, 1 + trunkX - leafXOffset, leafBaseY + leafYOffset, 1 + trunkZ - leafZOffset);
++                        }
++                    }
++                }
++
++                // Leaf Part 3
++                // place 2x2 leaves 2 blocks above <leafBaseY> with 1/2 chance
++                if (rand.nextBoolean())
++                {
++                    this.func_150526_a(worldIn, trunkX, leafBaseY + 2, trunkZ);
++                    this.func_150526_a(worldIn, trunkX + 1, leafBaseY + 2, trunkZ);
++                    this.func_150526_a(worldIn, trunkX + 1, leafBaseY + 2, trunkZ + 1);
++                    this.func_150526_a(worldIn, trunkX, leafBaseY + 2, trunkZ + 1);
++                }
++
++
++                for (int leafXOffset = -3; leafXOffset <= 4; ++leafXOffset)
++                {
++                    for (int leafZOffset = -3; leafZOffset <= 4; ++leafZOffset)
++                    {
++                        // Leaf Part 4
++                        /*
++                         * Place leaves in the following pattern at y <leafBaseY>: 0 = air, L = leaf, T = leaf directly above trunk
++                         * 0 L L L L L 0 0
++                         * L L L L L L L L
++                         * L L L L L L L L
++                         * L L L T T L L L
++                         * L L L T T L L L
++                         * L L L L L L L L
++                         * 0 L L L L L 0 0
++                         * 0 L L L L L 0 0
++                         */
++                        if ((leafXOffset != -3 || leafZOffset != -3) && (leafXOffset != -3 || leafZOffset != 4)
++                        && (leafXOffset != 4 || leafZOffset != -3) && (leafXOffset != 4 || leafZOffset != 4)
++                        && (Math.abs(leafXOffset) < 3 || Math.abs(leafZOffset) < 3))
++                        {
++                            this.func_150526_a(worldIn, trunkX + leafXOffset, leafBaseY, trunkZ + leafZOffset);
++                        }
++                    }
++                }
++
++                for (int branchOffsetX = -1; branchOffsetX <= 2; ++branchOffsetX)
++                {
++                    for (int branchOffsetZ = -1; branchOffsetZ <= 2; ++branchOffsetZ)
++                    {
++                        if ((branchOffsetX < 0 || branchOffsetX > 1 || branchOffsetZ < 0 || branchOffsetZ > 1) && rand.nextInt(3) <= 0)
++                        {
++                            int branchHeight = rand.nextInt(3) + 2;
++                            // place <branchHeight> logs from y level <leafBaseY - 1> to <leafBaseY - branchHeight>
++                            for (int i5 = 0; i5 < branchHeight; ++i5)
++                            {
++                                this.func_181639_b(worldIn, new BlockPos(posX + branchOffsetX, leafBaseY - i5 - 1, posZ + branchOffsetZ));
++                            }
++
++                            // Leaf Part 5
++                            // place 3x3 leaves at the y level 1 above the top of the branch
++                            // remark: no leaf is actually placed here, because all leaves placed here is already placed at Part 4
++                            for (int j5 = -1; j5 <= 1; ++j5)
++                            {
++                                for (int l2 = -1; l2 <= 1; ++l2)
++                                {
++                                    this.func_150526_a(worldIn, trunkX + branchOffsetX + j5, leafBaseY, trunkZ + branchOffsetZ + l2);
++                                }
++                            }
++                            // Leaf Part 6
++                            // place 5x5 leaves, except at the corners, at the y level of the top of the branch
++                            for (int k5 = -2; k5 <= 2; ++k5)
++                            {
++                                for (int l5 = -2; l5 <= 2; ++l5)
++                                {
++                                    if (Math.abs(k5) != 2 || Math.abs(l5) != 2)
++                                    {
++                                        this.func_150526_a(worldIn, trunkX + branchOffsetX + k5, leafBaseY - 1, trunkZ + branchOffsetZ + l5);
++                                    }
++                                }
++                            }
++                        }
++                    }
++                }
++
++                return true;
++            }
++        }
++        else
++        {
++            return false;
++        }
++    }
++
+     private boolean func_181638_a(World p_181638_1_, BlockPos p_181638_2_, int p_181638_3_)
+     {
+         int i = p_181638_2_.func_177958_n();

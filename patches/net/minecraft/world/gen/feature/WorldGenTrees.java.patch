@@ -1,0 +1,215 @@
+--- ../src-base/minecraft/net/minecraft/world/gen/feature/WorldGenTrees.java
++++ ../src-work/minecraft/net/minecraft/world/gen/feature/WorldGenTrees.java
+@@ -39,36 +39,36 @@
+         this.field_76531_b = p_i46446_5_;
+     }
+ 
+-    public boolean func_180709_b(World p_180709_1_, Random p_180709_2_, BlockPos p_180709_3_)
++    public boolean generate_vanilla(World worldIn, Random rand, BlockPos position)
+     {
+-        int i = p_180709_2_.nextInt(3) + this.field_76533_a;
++        int i = rand.nextInt(3) + this.field_76533_a;
+         boolean flag = true;
+ 
+-        if (p_180709_3_.func_177956_o() >= 1 && p_180709_3_.func_177956_o() + i + 1 <= 256)
++        if (position.func_177956_o() >= 1 && position.func_177956_o() + i + 1 <= 256)
+         {
+-            for (int j = p_180709_3_.func_177956_o(); j <= p_180709_3_.func_177956_o() + 1 + i; ++j)
++            for (int j = position.func_177956_o(); j <= position.func_177956_o() + 1 + i; ++j)
+             {
+                 int k = 1;
+ 
+-                if (j == p_180709_3_.func_177956_o())
++                if (j == position.func_177956_o())
+                 {
+                     k = 0;
+                 }
+ 
+-                if (j >= p_180709_3_.func_177956_o() + 1 + i - 2)
++                if (j >= position.func_177956_o() + 1 + i - 2)
+                 {
+                     k = 2;
+                 }
+ 
+                 BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+ 
+-                for (int l = p_180709_3_.func_177958_n() - k; l <= p_180709_3_.func_177958_n() + k && flag; ++l)
++                for (int l = position.func_177958_n() - k; l <= position.func_177958_n() + k && flag; ++l)
+                 {
+-                    for (int i1 = p_180709_3_.func_177952_p() - k; i1 <= p_180709_3_.func_177952_p() + k && flag; ++i1)
++                    for (int i1 = position.func_177952_p() - k; i1 <= position.func_177952_p() + k && flag; ++i1)
+                     {
+                         if (j >= 0 && j < 256)
+                         {
+-                            if (!this.func_150523_a(p_180709_1_.func_180495_p(blockpos$mutableblockpos.func_181079_c(l, j, i1)).func_177230_c()))
++                            if (!this.func_150523_a(worldIn.func_180495_p(blockpos$mutableblockpos.func_181079_c(l, j, i1)).func_177230_c()))
+                             {
+                                 flag = false;
+                             }
+@@ -87,35 +87,35 @@
+             }
+             else
+             {
+-                Block block = p_180709_1_.func_180495_p(p_180709_3_.func_177977_b()).func_177230_c();
++                Block block = worldIn.func_180495_p(position.func_177977_b()).func_177230_c();
+ 
+-                if ((block == Blocks.field_150349_c || block == Blocks.field_150346_d || block == Blocks.field_150458_ak) && p_180709_3_.func_177956_o() < 256 - i - 1)
++                if ((block == Blocks.field_150349_c || block == Blocks.field_150346_d || block == Blocks.field_150458_ak) && position.func_177956_o() < 256 - i - 1)
+                 {
+-                    this.func_175921_a(p_180709_1_, p_180709_3_.func_177977_b());
++                    this.func_175921_a(worldIn, position.func_177977_b());
+                     int k2 = 3;
+                     int l2 = 0;
+ 
+-                    for (int i3 = p_180709_3_.func_177956_o() - 3 + i; i3 <= p_180709_3_.func_177956_o() + i; ++i3)
++                    for (int i3 = position.func_177956_o() - 3 + i; i3 <= position.func_177956_o() + i; ++i3)
+                     {
+-                        int i4 = i3 - (p_180709_3_.func_177956_o() + i);
++                        int i4 = i3 - (position.func_177956_o() + i);
+                         int j1 = 1 - i4 / 2;
+ 
+-                        for (int k1 = p_180709_3_.func_177958_n() - j1; k1 <= p_180709_3_.func_177958_n() + j1; ++k1)
++                        for (int k1 = position.func_177958_n() - j1; k1 <= position.func_177958_n() + j1; ++k1)
+                         {
+-                            int l1 = k1 - p_180709_3_.func_177958_n();
++                            int l1 = k1 - position.func_177958_n();
+ 
+-                            for (int i2 = p_180709_3_.func_177952_p() - j1; i2 <= p_180709_3_.func_177952_p() + j1; ++i2)
++                            for (int i2 = position.func_177952_p() - j1; i2 <= position.func_177952_p() + j1; ++i2)
+                             {
+-                                int j2 = i2 - p_180709_3_.func_177952_p();
++                                int j2 = i2 - position.func_177952_p();
+ 
+-                                if (Math.abs(l1) != j1 || Math.abs(j2) != j1 || p_180709_2_.nextInt(2) != 0 && i4 != 0)
++                                if (Math.abs(l1) != j1 || Math.abs(j2) != j1 || rand.nextInt(2) != 0 && i4 != 0)
+                                 {
+                                     BlockPos blockpos = new BlockPos(k1, i3, i2);
+-                                    Material material = p_180709_1_.func_180495_p(blockpos).func_185904_a();
++                                    Material material = worldIn.func_180495_p(blockpos).func_185904_a();
+ 
+                                     if (material == Material.field_151579_a || material == Material.field_151584_j || material == Material.field_151582_l)
+                                     {
+-                                        this.func_175903_a(p_180709_1_, blockpos, this.field_76530_d);
++                                        this.func_175903_a(worldIn, blockpos, this.field_76530_d);
+                                     }
+                                 }
+                             }
+@@ -124,32 +124,32 @@
+ 
+                     for (int j3 = 0; j3 < i; ++j3)
+                     {
+-                        Material material1 = p_180709_1_.func_180495_p(p_180709_3_.func_177981_b(j3)).func_185904_a();
++                        Material material1 = worldIn.func_180495_p(position.func_177981_b(j3)).func_185904_a();
+ 
+                         if (material1 == Material.field_151579_a || material1 == Material.field_151584_j || material1 == Material.field_151582_l)
+                         {
+-                            this.func_175903_a(p_180709_1_, p_180709_3_.func_177981_b(j3), this.field_76532_c);
++                            this.func_175903_a(worldIn, position.func_177981_b(j3), this.field_76532_c);
+ 
+                             if (this.field_76531_b && j3 > 0)
+                             {
+-                                if (p_180709_2_.nextInt(3) > 0 && p_180709_1_.func_175623_d(p_180709_3_.func_177982_a(-1, j3, 0)))
++                                if (rand.nextInt(3) > 0 && worldIn.func_175623_d(position.func_177982_a(-1, j3, 0)))
+                                 {
+-                                    this.func_181651_a(p_180709_1_, p_180709_3_.func_177982_a(-1, j3, 0), BlockVine.field_176278_M);
++                                    this.func_181651_a(worldIn, position.func_177982_a(-1, j3, 0), BlockVine.field_176278_M);
+                                 }
+ 
+-                                if (p_180709_2_.nextInt(3) > 0 && p_180709_1_.func_175623_d(p_180709_3_.func_177982_a(1, j3, 0)))
++                                if (rand.nextInt(3) > 0 && worldIn.func_175623_d(position.func_177982_a(1, j3, 0)))
+                                 {
+-                                    this.func_181651_a(p_180709_1_, p_180709_3_.func_177982_a(1, j3, 0), BlockVine.field_176280_O);
++                                    this.func_181651_a(worldIn, position.func_177982_a(1, j3, 0), BlockVine.field_176280_O);
+                                 }
+ 
+-                                if (p_180709_2_.nextInt(3) > 0 && p_180709_1_.func_175623_d(p_180709_3_.func_177982_a(0, j3, -1)))
++                                if (rand.nextInt(3) > 0 && worldIn.func_175623_d(position.func_177982_a(0, j3, -1)))
+                                 {
+-                                    this.func_181651_a(p_180709_1_, p_180709_3_.func_177982_a(0, j3, -1), BlockVine.field_176279_N);
++                                    this.func_181651_a(worldIn, position.func_177982_a(0, j3, -1), BlockVine.field_176279_N);
+                                 }
+ 
+-                                if (p_180709_2_.nextInt(3) > 0 && p_180709_1_.func_175623_d(p_180709_3_.func_177982_a(0, j3, 1)))
++                                if (rand.nextInt(3) > 0 && worldIn.func_175623_d(position.func_177982_a(0, j3, 1)))
+                                 {
+-                                    this.func_181651_a(p_180709_1_, p_180709_3_.func_177982_a(0, j3, 1), BlockVine.field_176273_b);
++                                    this.func_181651_a(worldIn, position.func_177982_a(0, j3, 1), BlockVine.field_176273_b);
+                                 }
+                             }
+                         }
+@@ -157,59 +157,59 @@
+ 
+                     if (this.field_76531_b)
+                     {
+-                        for (int k3 = p_180709_3_.func_177956_o() - 3 + i; k3 <= p_180709_3_.func_177956_o() + i; ++k3)
++                        for (int k3 = position.func_177956_o() - 3 + i; k3 <= position.func_177956_o() + i; ++k3)
+                         {
+-                            int j4 = k3 - (p_180709_3_.func_177956_o() + i);
++                            int j4 = k3 - (position.func_177956_o() + i);
+                             int k4 = 2 - j4 / 2;
+                             BlockPos.MutableBlockPos blockpos$mutableblockpos1 = new BlockPos.MutableBlockPos();
+ 
+-                            for (int l4 = p_180709_3_.func_177958_n() - k4; l4 <= p_180709_3_.func_177958_n() + k4; ++l4)
++                            for (int l4 = position.func_177958_n() - k4; l4 <= position.func_177958_n() + k4; ++l4)
+                             {
+-                                for (int i5 = p_180709_3_.func_177952_p() - k4; i5 <= p_180709_3_.func_177952_p() + k4; ++i5)
++                                for (int i5 = position.func_177952_p() - k4; i5 <= position.func_177952_p() + k4; ++i5)
+                                 {
+                                     blockpos$mutableblockpos1.func_181079_c(l4, k3, i5);
+ 
+-                                    if (p_180709_1_.func_180495_p(blockpos$mutableblockpos1).func_185904_a() == Material.field_151584_j)
++                                    if (worldIn.func_180495_p(blockpos$mutableblockpos1).func_185904_a() == Material.field_151584_j)
+                                     {
+                                         BlockPos blockpos2 = blockpos$mutableblockpos1.func_177976_e();
+                                         BlockPos blockpos3 = blockpos$mutableblockpos1.func_177974_f();
+                                         BlockPos blockpos4 = blockpos$mutableblockpos1.func_177978_c();
+                                         BlockPos blockpos1 = blockpos$mutableblockpos1.func_177968_d();
+ 
+-                                        if (p_180709_2_.nextInt(4) == 0 && p_180709_1_.func_180495_p(blockpos2).func_185904_a() == Material.field_151579_a)
++                                        if (rand.nextInt(4) == 0 && worldIn.func_180495_p(blockpos2).func_185904_a() == Material.field_151579_a)
+                                         {
+-                                            this.func_181650_b(p_180709_1_, blockpos2, BlockVine.field_176278_M);
++                                            this.func_181650_b(worldIn, blockpos2, BlockVine.field_176278_M);
+                                         }
+ 
+-                                        if (p_180709_2_.nextInt(4) == 0 && p_180709_1_.func_180495_p(blockpos3).func_185904_a() == Material.field_151579_a)
++                                        if (rand.nextInt(4) == 0 && worldIn.func_180495_p(blockpos3).func_185904_a() == Material.field_151579_a)
+                                         {
+-                                            this.func_181650_b(p_180709_1_, blockpos3, BlockVine.field_176280_O);
++                                            this.func_181650_b(worldIn, blockpos3, BlockVine.field_176280_O);
+                                         }
+ 
+-                                        if (p_180709_2_.nextInt(4) == 0 && p_180709_1_.func_180495_p(blockpos4).func_185904_a() == Material.field_151579_a)
++                                        if (rand.nextInt(4) == 0 && worldIn.func_180495_p(blockpos4).func_185904_a() == Material.field_151579_a)
+                                         {
+-                                            this.func_181650_b(p_180709_1_, blockpos4, BlockVine.field_176279_N);
++                                            this.func_181650_b(worldIn, blockpos4, BlockVine.field_176279_N);
+                                         }
+ 
+-                                        if (p_180709_2_.nextInt(4) == 0 && p_180709_1_.func_180495_p(blockpos1).func_185904_a() == Material.field_151579_a)
++                                        if (rand.nextInt(4) == 0 && worldIn.func_180495_p(blockpos1).func_185904_a() == Material.field_151579_a)
+                                         {
+-                                            this.func_181650_b(p_180709_1_, blockpos1, BlockVine.field_176273_b);
++                                            this.func_181650_b(worldIn, blockpos1, BlockVine.field_176273_b);
+                                         }
+                                     }
+                                 }
+                             }
+                         }
+ 
+-                        if (p_180709_2_.nextInt(5) == 0 && i > 5)
++                        if (rand.nextInt(5) == 0 && i > 5)
+                         {
+                             for (int l3 = 0; l3 < 2; ++l3)
+                             {
+                                 for (EnumFacing enumfacing : EnumFacing.Plane.HORIZONTAL)
+                                 {
+-                                    if (p_180709_2_.nextInt(4 - l3) == 0)
++                                    if (rand.nextInt(4 - l3) == 0)
+                                     {
+                                         EnumFacing enumfacing1 = enumfacing.func_176734_d();
+-                                        this.func_181652_a(p_180709_1_, p_180709_2_.nextInt(3), p_180709_3_.func_177982_a(enumfacing1.func_82601_c(), i - 5 + l3, enumfacing1.func_82599_e()), enumfacing);
++                                        this.func_181652_a(worldIn, rand.nextInt(3), position.func_177982_a(enumfacing1.func_82601_c(), i - 5 + l3, enumfacing1.func_82599_e()), enumfacing);
+                                     }
+                                 }
+                             }

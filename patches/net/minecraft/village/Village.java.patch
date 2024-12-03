@@ -1,0 +1,70 @@
+--- ../src-base/minecraft/net/minecraft/village/Village.java
++++ ../src-work/minecraft/net/minecraft/village/Village.java
+@@ -73,17 +73,21 @@
+ 
+         int i = this.field_75588_h / 10;
+ 
+-        if (this.field_75587_j < i && this.field_75584_b.size() > 20 && this.field_75586_a.field_73012_v.nextInt(7000) == 0)
++
++        if (this.field_75587_j < i && this.field_75584_b.size() > 20)
+         {
+-            Vec3d vec3d = this.func_179862_a(this.field_75582_d, 2, 4, 2);
++            if (this.field_75586_a.field_73012_v.nextInt(7000) == 0) {
++                Vec3d vec3d = this.func_179862_a(this.field_75582_d, 2, 4, 2);
+ 
+-            if (vec3d != null)
+-            {
+-                EntityIronGolem entityirongolem = new EntityIronGolem(this.field_75586_a);
+-                entityirongolem.func_70107_b(vec3d.field_72450_a, vec3d.field_72448_b, vec3d.field_72449_c);
+-                this.field_75586_a.func_72838_d(entityirongolem);
+-                ++this.field_75587_j;
++                if (vec3d != null)
++                {
++                    EntityIronGolem entityirongolem = new EntityIronGolem(this.field_75586_a);
++                    entityirongolem.func_70107_b(vec3d.field_72450_a, vec3d.field_72448_b, vec3d.field_72449_c);
++                    this.field_75586_a.func_72838_d(entityirongolem);
++                    ++this.field_75587_j;
++                }
+             }
++
+         }
+     }
+ 
+@@ -91,7 +95,8 @@
+     {
+         for (int i = 0; i < 10; ++i)
+         {
+-            BlockPos blockpos = p_179862_1_.func_177982_a(this.field_75586_a.field_73012_v.nextInt(16) - 8, this.field_75586_a.field_73012_v.nextInt(6) - 3, this.field_75586_a.field_73012_v.nextInt(16) - 8);
++            BlockPos blockpos = p_179862_1_.func_177982_a(this.field_75586_a.field_73012_v.nextInt(16) - 8,
++                    this.field_75586_a.field_73012_v.nextInt(6) - 3, this.field_75586_a.field_73012_v.nextInt(16) - 8);
+ 
+             if (this.func_179866_a(blockpos) && this.func_179861_a(new BlockPos(p_179862_2_, p_179862_3_, p_179862_4_), blockpos))
+             {
+@@ -139,7 +144,9 @@
+ 
+     private void func_75572_i()
+     {
+-        List<EntityVillager> list = this.field_75586_a.<EntityVillager>func_72872_a(EntityVillager.class, new AxisAlignedBB((double)(this.field_75582_d.func_177958_n() - this.field_75583_e), (double)(this.field_75582_d.func_177956_o() - 4), (double)(this.field_75582_d.func_177952_p() - this.field_75583_e), (double)(this.field_75582_d.func_177958_n() + this.field_75583_e), (double)(this.field_75582_d.func_177956_o() + 4), (double)(this.field_75582_d.func_177952_p() + this.field_75583_e)));
++        List<EntityVillager> list = this.field_75586_a.<EntityVillager>func_72872_a(EntityVillager.class,
++                new AxisAlignedBB((double)(this.field_75582_d.func_177958_n() - this.field_75583_e),
++                        (double)(this.field_75582_d.func_177956_o() - 4), (double)(this.field_75582_d.func_177952_p() - this.field_75583_e), (double)(this.field_75582_d.func_177958_n() + this.field_75583_e), (double)(this.field_75582_d.func_177956_o() + 4), (double)(this.field_75582_d.func_177952_p() + this.field_75583_e)));
+         this.field_75588_h = list.size();
+ 
+         if (this.field_75588_h == 0)
+@@ -368,6 +375,7 @@
+                 flag = true;
+                 villagedoorinfo.func_179853_a(true);
+                 iterator.remove();
++                VillageCollection.updateMarkers = true;
+             }
+         }
+ 
+@@ -379,7 +387,7 @@
+ 
+     private boolean func_179860_f(BlockPos p_179860_1_)
+     {
+-        IBlockState iblockstate = this.field_75586_a.func_180495_p(p_179860_1_);
++        IBlockState iblockstate = this.field_75586_a.getBlockState(p_179860_1_, "Village loading");
+         Block block = iblockstate.func_177230_c();
+ 
+         if (block instanceof BlockDoor)

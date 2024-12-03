@@ -1,0 +1,55 @@
+--- ../src-base/minecraft/net/minecraft/block/BlockDaylightDetector.java
++++ ../src-work/minecraft/net/minecraft/block/BlockDaylightDetector.java
+@@ -1,6 +1,8 @@
+ package net.minecraft.block;
+ 
+ import java.util.Random;
++
++import carpet.CarpetSettings;
+ import net.minecraft.block.material.Material;
+ import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.properties.PropertyInteger;
+@@ -25,7 +27,10 @@
+ import net.minecraft.world.IBlockAccess;
+ import net.minecraft.world.World;
+ 
+-public class BlockDaylightDetector extends BlockContainer
++import redstone.multimeter.block.Meterable;
++import redstone.multimeter.block.PowerSource;
++
++public class BlockDaylightDetector extends BlockContainer implements Meterable /* RSMM */, PowerSource /* RSMM */
+ {
+     public static final PropertyInteger field_176436_a = PropertyInteger.func_177719_a("power", 0, 15);
+     protected static final AxisAlignedBB field_185566_b = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.375D, 1.0D);
+@@ -93,12 +98,12 @@
+             {
+                 if (this.field_176435_b)
+                 {
+-                    p_180639_1_.func_180501_a(p_180639_2_, Blocks.field_150453_bW.func_176223_P().func_177226_a(field_176436_a, p_180639_3_.func_177229_b(field_176436_a)), 4);
++                    p_180639_1_.func_180501_a(p_180639_2_, Blocks.field_150453_bW.func_176223_P().func_177226_a(field_176436_a, p_180639_3_.func_177229_b(field_176436_a)), CarpetSettings.blockStateSyncing ? 6 : 4);
+                     Blocks.field_150453_bW.func_180677_d(p_180639_1_, p_180639_2_);
+                 }
+                 else
+                 {
+-                    p_180639_1_.func_180501_a(p_180639_2_, Blocks.field_180402_cm.func_176223_P().func_177226_a(field_176436_a, p_180639_3_.func_177229_b(field_176436_a)), 4);
++                    p_180639_1_.func_180501_a(p_180639_2_, Blocks.field_180402_cm.func_176223_P().func_177226_a(field_176436_a, p_180639_3_.func_177229_b(field_176436_a)), CarpetSettings.blockStateSyncing ? 6 : 4);
+                     Blocks.field_180402_cm.func_180677_d(p_180639_1_, p_180639_2_);
+                 }
+ 
+@@ -173,4 +178,16 @@
+     {
+         return p_193383_4_ == EnumFacing.DOWN ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
+     }
++
++    // RSMM
++    @Override
++    public boolean isActive(World world, BlockPos pos, IBlockState state) {
++        return state.func_177229_b(field_176436_a) > MIN_POWER;
++    }
++
++    // RSMM
++    @Override
++    public int getPowerLevel(World world, BlockPos pos, IBlockState state) {
++        return state.func_177229_b(field_176436_a);
++    }
+ }

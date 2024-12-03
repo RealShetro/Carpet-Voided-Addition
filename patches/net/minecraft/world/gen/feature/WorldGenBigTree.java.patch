@@ -1,0 +1,18 @@
+--- ../src-base/minecraft/net/minecraft/world/gen/feature/WorldGenBigTree.java
++++ ../src-work/minecraft/net/minecraft/world/gen/feature/WorldGenBigTree.java
+@@ -284,11 +284,11 @@
+         this.field_76508_n = 5;
+     }
+ 
+-    public boolean func_180709_b(World p_180709_1_, Random p_180709_2_, BlockPos p_180709_3_)
++    public boolean generate_vanilla(World worldIn, Random rand, BlockPos position)
+     {
+-        this.field_175946_l = p_180709_1_;
+-        this.field_175947_m = p_180709_3_;
+-        this.field_175949_k = new Random(p_180709_2_.nextLong());
++        this.field_175946_l = worldIn;
++        this.field_175947_m = position;
++        this.field_175949_k = new Random(rand.nextLong());
+ 
+         if (this.field_76504_e == 0)
+         {

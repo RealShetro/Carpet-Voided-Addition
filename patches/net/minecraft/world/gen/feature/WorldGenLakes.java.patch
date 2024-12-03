@@ -1,0 +1,120 @@
+--- ../src-base/minecraft/net/minecraft/world/gen/feature/WorldGenLakes.java
++++ ../src-work/minecraft/net/minecraft/world/gen/feature/WorldGenLakes.java
+@@ -18,31 +18,31 @@
+         this.field_150556_a = p_i45455_1_;
+     }
+ 
+-    public boolean func_180709_b(World p_180709_1_, Random p_180709_2_, BlockPos p_180709_3_)
++    public boolean generate_vanilla(World worldIn, Random rand, BlockPos position)
+     {
+-        for (p_180709_3_ = p_180709_3_.func_177982_a(-8, 0, -8); p_180709_3_.func_177956_o() > 5 && p_180709_1_.func_175623_d(p_180709_3_); p_180709_3_ = p_180709_3_.func_177977_b())
++        for (position = position.func_177982_a(-8, 0, -8); position.func_177956_o() > 5 && worldIn.func_175623_d(position); position = position.func_177977_b())
+         {
+             ;
+         }
+ 
+-        if (p_180709_3_.func_177956_o() <= 4)
++        if (position.func_177956_o() <= 4)
+         {
+             return false;
+         }
+         else
+         {
+-            p_180709_3_ = p_180709_3_.func_177979_c(4);
++            position = position.func_177979_c(4);
+             boolean[] aboolean = new boolean[2048];
+-            int i = p_180709_2_.nextInt(4) + 4;
++            int i = rand.nextInt(4) + 4;
+ 
+             for (int j = 0; j < i; ++j)
+             {
+-                double d0 = p_180709_2_.nextDouble() * 6.0D + 3.0D;
+-                double d1 = p_180709_2_.nextDouble() * 4.0D + 2.0D;
+-                double d2 = p_180709_2_.nextDouble() * 6.0D + 3.0D;
+-                double d3 = p_180709_2_.nextDouble() * (16.0D - d0 - 2.0D) + 1.0D + d0 / 2.0D;
+-                double d4 = p_180709_2_.nextDouble() * (8.0D - d1 - 4.0D) + 2.0D + d1 / 2.0D;
+-                double d5 = p_180709_2_.nextDouble() * (16.0D - d2 - 2.0D) + 1.0D + d2 / 2.0D;
++                double d0 = rand.nextDouble() * 6.0D + 3.0D;
++                double d1 = rand.nextDouble() * 4.0D + 2.0D;
++                double d2 = rand.nextDouble() * 6.0D + 3.0D;
++                double d3 = rand.nextDouble() * (16.0D - d0 - 2.0D) + 1.0D + d0 / 2.0D;
++                double d4 = rand.nextDouble() * (8.0D - d1 - 4.0D) + 2.0D + d1 / 2.0D;
++                double d5 = rand.nextDouble() * (16.0D - d2 - 2.0D) + 1.0D + d2 / 2.0D;
+ 
+                 for (int l = 1; l < 15; ++l)
+                 {
+@@ -74,14 +74,14 @@
+ 
+                         if (flag)
+                         {
+-                            Material material = p_180709_1_.func_180495_p(p_180709_3_.func_177982_a(k1, k, l2)).func_185904_a();
++                            Material material = worldIn.func_180495_p(position.func_177982_a(k1, k, l2)).func_185904_a();
+ 
+                             if (k >= 4 && material.func_76224_d())
+                             {
+                                 return false;
+                             }
+ 
+-                            if (k < 4 && !material.func_76220_a() && p_180709_1_.func_180495_p(p_180709_3_.func_177982_a(k1, k, l2)).func_177230_c() != this.field_150556_a)
++                            if (k < 4 && !material.func_76220_a() && worldIn.func_180495_p(position.func_177982_a(k1, k, l2)).func_177230_c() != this.field_150556_a)
+                             {
+                                 return false;
+                             }
+@@ -98,7 +98,7 @@
+                     {
+                         if (aboolean[(l1 * 16 + i3) * 8 + i4])
+                         {
+-                            p_180709_1_.func_180501_a(p_180709_3_.func_177982_a(l1, i4, i3), i4 >= 4 ? Blocks.field_150350_a.func_176223_P() : this.field_150556_a.func_176223_P(), 2);
++                            worldIn.func_180501_a(position.func_177982_a(l1, i4, i3), i4 >= 4 ? Blocks.field_150350_a.func_176223_P() : this.field_150556_a.func_176223_P(), 2);
+                         }
+                     }
+                 }
+@@ -112,19 +112,19 @@
+                     {
+                         if (aboolean[(i2 * 16 + j3) * 8 + j4])
+                         {
+-                            BlockPos blockpos = p_180709_3_.func_177982_a(i2, j4 - 1, j3);
++                            BlockPos blockpos = position.func_177982_a(i2, j4 - 1, j3);
+ 
+-                            if (p_180709_1_.func_180495_p(blockpos).func_177230_c() == Blocks.field_150346_d && p_180709_1_.func_175642_b(EnumSkyBlock.SKY, p_180709_3_.func_177982_a(i2, j4, j3)) > 0)
++                            if (worldIn.func_180495_p(blockpos).func_177230_c() == Blocks.field_150346_d && worldIn.func_175642_b(EnumSkyBlock.SKY, position.func_177982_a(i2, j4, j3)) > 0)
+                             {
+-                                Biome biome = p_180709_1_.func_180494_b(blockpos);
++                                Biome biome = worldIn.func_180494_b(blockpos);
+ 
+                                 if (biome.field_76752_A.func_177230_c() == Blocks.field_150391_bh)
+                                 {
+-                                    p_180709_1_.func_180501_a(blockpos, Blocks.field_150391_bh.func_176223_P(), 2);
++                                    worldIn.func_180501_a(blockpos, Blocks.field_150391_bh.func_176223_P(), 2);
+                                 }
+                                 else
+                                 {
+-                                    p_180709_1_.func_180501_a(blockpos, Blocks.field_150349_c.func_176223_P(), 2);
++                                    worldIn.func_180501_a(blockpos, Blocks.field_150349_c.func_176223_P(), 2);
+                                 }
+                             }
+                         }
+@@ -142,9 +142,9 @@
+                         {
+                             boolean flag1 = !aboolean[(j2 * 16 + k3) * 8 + k4] && (j2 < 15 && aboolean[((j2 + 1) * 16 + k3) * 8 + k4] || j2 > 0 && aboolean[((j2 - 1) * 16 + k3) * 8 + k4] || k3 < 15 && aboolean[(j2 * 16 + k3 + 1) * 8 + k4] || k3 > 0 && aboolean[(j2 * 16 + (k3 - 1)) * 8 + k4] || k4 < 7 && aboolean[(j2 * 16 + k3) * 8 + k4 + 1] || k4 > 0 && aboolean[(j2 * 16 + k3) * 8 + (k4 - 1)]);
+ 
+-                            if (flag1 && (k4 < 4 || p_180709_2_.nextInt(2) != 0) && p_180709_1_.func_180495_p(p_180709_3_.func_177982_a(j2, k4, k3)).func_185904_a().func_76220_a())
++                            if (flag1 && (k4 < 4 || rand.nextInt(2) != 0) && worldIn.func_180495_p(position.func_177982_a(j2, k4, k3)).func_185904_a().func_76220_a())
+                             {
+-                                p_180709_1_.func_180501_a(p_180709_3_.func_177982_a(j2, k4, k3), Blocks.field_150348_b.func_176223_P(), 2);
++                                worldIn.func_180501_a(position.func_177982_a(j2, k4, k3), Blocks.field_150348_b.func_176223_P(), 2);
+                             }
+                         }
+                     }
+@@ -159,9 +159,9 @@
+                     {
+                         int l4 = 4;
+ 
+-                        if (p_180709_1_.func_175675_v(p_180709_3_.func_177982_a(k2, 4, l3)))
++                        if (worldIn.func_175675_v(position.func_177982_a(k2, 4, l3)))
+                         {
+-                            p_180709_1_.func_180501_a(p_180709_3_.func_177982_a(k2, 4, l3), Blocks.field_150432_aD.func_176223_P(), 2);
++                            worldIn.func_180501_a(position.func_177982_a(k2, 4, l3), Blocks.field_150432_aD.func_176223_P(), 2);
+                         }
+                     }
+                 }

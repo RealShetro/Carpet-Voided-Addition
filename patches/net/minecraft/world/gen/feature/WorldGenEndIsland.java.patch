@@ -1,0 +1,29 @@
+--- ../src-base/minecraft/net/minecraft/world/gen/feature/WorldGenEndIsland.java
++++ ../src-work/minecraft/net/minecraft/world/gen/feature/WorldGenEndIsland.java
+@@ -8,9 +8,9 @@
+ 
+ public class WorldGenEndIsland extends WorldGenerator
+ {
+-    public boolean func_180709_b(World p_180709_1_, Random p_180709_2_, BlockPos p_180709_3_)
++    public boolean generate_vanilla(World worldIn, Random rand, BlockPos position)
+     {
+-        float f = (float)(p_180709_2_.nextInt(3) + 4);
++        float f = (float)(rand.nextInt(3) + 4);
+ 
+         for (int i = 0; f > 0.5F; --i)
+         {
+@@ -20,12 +20,12 @@
+                 {
+                     if ((float)(j * j + k * k) <= (f + 1.0F) * (f + 1.0F))
+                     {
+-                        this.func_175903_a(p_180709_1_, p_180709_3_.func_177982_a(j, i, k), Blocks.field_150377_bs.func_176223_P());
++                        this.func_175903_a(worldIn, position.func_177982_a(j, i, k), Blocks.field_150377_bs.func_176223_P());
+                     }
+                 }
+             }
+ 
+-            f = (float)((double)f - ((double)p_180709_2_.nextInt(2) + 0.5D));
++            f = (float)((double)f - ((double)rand.nextInt(2) + 0.5D));
+         }
+ 
+         return true;

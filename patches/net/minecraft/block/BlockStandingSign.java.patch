@@ -1,0 +1,50 @@
+--- ../src-base/minecraft/net/minecraft/block/BlockStandingSign.java
++++ ../src-work/minecraft/net/minecraft/block/BlockStandingSign.java
+@@ -1,12 +1,19 @@
+ package net.minecraft.block;
+ 
++import carpet.CarpetSettings;
+ import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.properties.PropertyInteger;
+ import net.minecraft.block.state.BlockStateContainer;
+ import net.minecraft.block.state.IBlockState;
++import net.minecraft.init.Blocks;
++import net.minecraft.tileentity.TileEntity;
++import net.minecraft.tileentity.TileEntitySign;
++import net.minecraft.util.EnumFacing;
+ import net.minecraft.util.Mirror;
+ import net.minecraft.util.Rotation;
+ import net.minecraft.util.math.BlockPos;
++import net.minecraft.util.text.ITextComponent;
++import net.minecraft.util.text.TextComponentString;
+ import net.minecraft.world.World;
+ 
+ public class BlockStandingSign extends BlockSign
+@@ -24,6 +31,27 @@
+         {
+             this.func_176226_b(p_189540_2_, p_189540_3_, p_189540_1_, 0);
+             p_189540_2_.func_175698_g(p_189540_3_);
++        } else if (CarpetSettings.signComparatorDisplay && p_189540_2_.func_180495_p(p_189540_3_.func_177977_b()).func_177230_c() == Blocks.field_150475_bE) {
++            // carpet
++            int signal = 0;
++            for (EnumFacing facing: EnumFacing.values()) {
++                signal = Math.max(signal, p_189540_2_.func_175651_c(p_189540_3_.func_177972_a(facing), facing));
++            }
++            int storedSignal = 0;
++            TileEntity te = p_189540_2_.func_175625_s(p_189540_3_);
++            TileEntitySign sign = null;
++            if (te instanceof TileEntitySign) {
++                sign = (TileEntitySign) te;
++                try {
++                    storedSignal = Integer.parseInt(sign.field_145915_a[0].func_150260_c());
++                } catch (NumberFormatException ignore) {}
++            } else return;
++            if (signal != storedSignal) {
++                sign.field_145915_a[0] = new TextComponentString(Integer.toString(signal));
++                sign.field_145915_a[1] = new TextComponentString("0x" + Integer.toHexString(signal));
++                sign.func_70296_d();
++                p_189540_2_.func_184138_a(p_189540_3_, p_189540_1_, p_189540_1_, 3);
++            }
+         }
+ 
+         super.func_189540_a(p_189540_1_, p_189540_2_, p_189540_3_, p_189540_4_, p_189540_5_);

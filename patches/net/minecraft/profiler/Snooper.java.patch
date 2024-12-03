@@ -1,0 +1,31 @@
+--- ../src-base/minecraft/net/minecraft/profiler/Snooper.java
++++ ../src-work/minecraft/net/minecraft/profiler/Snooper.java
+@@ -1,5 +1,6 @@
+ package net.minecraft.profiler;
+ 
++import carpet.CarpetSettings;
+ import com.google.common.collect.Maps;
+ import java.lang.management.ManagementFactory;
+ import java.lang.management.RuntimeMXBean;
+@@ -15,6 +16,7 @@
+ 
+ public class Snooper
+ {
++
+     private final Map<String, Object> field_152773_a = Maps.<String, Object>newHashMap();
+     private final Map<String, Object> field_152774_b = Maps.<String, Object>newHashMap();
+     private final String field_76480_b = UUID.randomUUID().toString();
+@@ -26,6 +28,13 @@
+     private boolean field_76477_g;
+     private int field_76483_h;
+ 
++    // VasCM - trivial constructor
++    protected Snooper() {
++        this.field_76481_c = null;
++        this.field_76478_d = null;
++        this.field_98224_g = CarpetSettings.ONE_ONE_FOUR_FIVE_ONE_FOUR;
++    }
++
+     public Snooper(String p_i1563_1_, ISnooperInfo p_i1563_2_, long p_i1563_3_)
+     {
+         try

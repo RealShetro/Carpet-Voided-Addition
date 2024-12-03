@@ -1,0 +1,85 @@
+--- ../src-base/minecraft/net/minecraft/block/BlockRedstoneDiode.java
++++ ../src-work/minecraft/net/minecraft/block/BlockRedstoneDiode.java
+@@ -13,7 +13,10 @@
+ import net.minecraft.world.IBlockAccess;
+ import net.minecraft.world.World;
+ 
+-public abstract class BlockRedstoneDiode extends BlockHorizontal
++import redstone.multimeter.block.MeterableBlock;
++import redstone.multimeter.block.PowerSource;
++
++public abstract class BlockRedstoneDiode extends BlockHorizontal implements MeterableBlock /* RSMM */, PowerSource /* RSMM */
+ {
+     protected static final AxisAlignedBB field_185548_c = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.125D, 1.0D);
+     protected final boolean field_149914_a;
+@@ -64,7 +67,7 @@
+ 
+                 if (!flag)
+                 {
+-                    p_180650_1_.func_175654_a(p_180650_2_, this.func_180674_e(p_180650_3_).func_177230_c(), this.func_176399_m(p_180650_3_), -1);
++                    p_180650_1_.func_175654_a(p_180650_2_, this.func_180674_e(p_180650_3_).func_177230_c(), this.getTickDelay(p_180650_3_, p_180650_1_, p_180650_2_), -1);
+                 }
+             }
+         }
+@@ -129,7 +132,7 @@
+                     i = -2;
+                 }
+ 
+-                p_176398_1_.func_175654_a(p_176398_2_, this, this.func_176403_d(p_176398_3_), i);
++                p_176398_1_.func_175654_a(p_176398_2_, this, this.getDelay(p_176398_3_, p_176398_1_, p_176398_2_), i);
+             }
+         }
+     }
+@@ -139,9 +142,12 @@
+         return false;
+     }
+ 
++    // RSMM - capture return value
+     protected boolean func_176404_e(World p_176404_1_, BlockPos p_176404_2_, IBlockState p_176404_3_)
+     {
+-        return this.func_176397_f(p_176404_1_, p_176404_2_, p_176404_3_) > 0;
++        boolean powered = this.func_176397_f(p_176404_1_, p_176404_2_, p_176404_3_) > 0;
++        logPowered(p_176404_1_, p_176404_2_, powered); // RSMM
++        return powered;
+     }
+ 
+     protected int func_176397_f(World p_176397_1_, BlockPos p_176397_2_, IBlockState p_176397_3_)
+@@ -276,12 +282,12 @@
+         }
+     }
+ 
+-    protected int func_176399_m(IBlockState p_176399_1_)
++    protected int getTickDelay(IBlockState state, World world, BlockPos pos)
+     {
+-        return this.func_176403_d(p_176399_1_);
++        return this.getDelay(state, world, pos);
+     }
+ 
+-    protected abstract int func_176403_d(IBlockState p_176403_1_);
++    protected abstract int getDelay(IBlockState state, World world, BlockPos pos);
+ 
+     protected abstract IBlockState func_180674_e(IBlockState p_180674_1_);
+ 
+@@ -296,4 +302,22 @@
+     {
+         return p_193383_4_ == EnumFacing.DOWN ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
+     }
++
++    // RSMM
++    @Override
++    public boolean logPoweredOnBlockUpdate() {
++        return false;
++    }
++
++    // RSMM
++    @Override
++    public boolean isPowered(World world, BlockPos pos, IBlockState state) {
++        return func_176404_e(world, pos, state);
++    }
++
++    // RSMM
++    @Override
++    public boolean isActive(World world, BlockPos pos, IBlockState state) {
++        return field_149914_a;
++    }
+ }

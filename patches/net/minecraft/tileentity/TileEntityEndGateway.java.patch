@@ -1,0 +1,36 @@
+--- ../src-base/minecraft/net/minecraft/tileentity/TileEntityEndGateway.java
++++ ../src-work/minecraft/net/minecraft/tileentity/TileEntityEndGateway.java
+@@ -169,12 +169,14 @@
+         Vec3d vec3d = (new Vec3d((double)this.func_174877_v().func_177958_n(), 0.0D, (double)this.func_174877_v().func_177952_p())).func_72432_b();
+         Vec3d vec3d1 = vec3d.func_186678_a(1024.0D);
+ 
+-        for (int i = 16; func_184301_a(this.field_145850_b, vec3d1).func_76625_h() > 0 && i-- > 0; vec3d1 = vec3d1.func_178787_e(vec3d.func_186678_a(-16.0D)))
++        for (int i = 16; func_184301_a(this.field_145850_b, vec3d1).func_76625_h() > 0 && i-- > 0;
++             vec3d1 = vec3d1.func_178787_e(vec3d.func_186678_a(-16.0D)))
+         {
+             field_184314_a.debug("Skipping backwards past nonempty chunk at {}", (Object)vec3d1);
+         }
+ 
+-        for (int j = 16; func_184301_a(this.field_145850_b, vec3d1).func_76625_h() == 0 && j-- > 0; vec3d1 = vec3d1.func_178787_e(vec3d.func_186678_a(16.0D)))
++        for (int j = 16; func_184301_a(this.field_145850_b, vec3d1).func_76625_h() == 0 && j-- > 0;
++             vec3d1 = vec3d1.func_178787_e(vec3d.func_186678_a(16.0D)))
+         {
+             field_184314_a.debug("Skipping forward past empty chunk at {}", (Object)vec3d1);
+         }
+@@ -205,6 +207,8 @@
+     {
+         BlockPos blockpos = null;
+ 
++        if(carpet.carpetclient.CarpetClientChunkLogger.logger.enabled)
++            carpet.carpetclient.CarpetClientChunkLogger.setReason("End gateway looking for highest block");
+         for (int i = -p_184308_2_; i <= p_184308_2_; ++i)
+         {
+             for (int j = -p_184308_2_; j <= p_184308_2_; ++j)
+@@ -225,6 +229,7 @@
+                 }
+             }
+         }
++        carpet.carpetclient.CarpetClientChunkLogger.resetReason();
+ 
+         return blockpos == null ? p_184308_1_ : blockpos;
+     }

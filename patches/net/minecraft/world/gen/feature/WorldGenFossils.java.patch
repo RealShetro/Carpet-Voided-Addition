@@ -1,0 +1,46 @@
+--- ../src-base/minecraft/net/minecraft/world/gen/feature/WorldGenFossils.java
++++ ../src-work/minecraft/net/minecraft/world/gen/feature/WorldGenFossils.java
+@@ -34,17 +34,17 @@
+     private static final ResourceLocation[] field_189906_q = new ResourceLocation[] {field_189890_a, field_189891_b, field_189892_c, field_189893_d, field_189898_i, field_189899_j, field_189900_k, field_189901_l};
+     private static final ResourceLocation[] field_189907_r = new ResourceLocation[] {field_189894_e, field_189895_f, field_189896_g, field_189897_h, field_189902_m, field_189903_n, field_189904_o, field_189905_p};
+ 
+-    public boolean func_180709_b(World p_180709_1_, Random p_180709_2_, BlockPos p_180709_3_)
++    public boolean generate_vanilla(World worldIn, Random rand, BlockPos position)
+     {
+-        Random random = p_180709_1_.func_175726_f(p_180709_3_).func_76617_a(987234911L);
+-        MinecraftServer minecraftserver = p_180709_1_.func_73046_m();
++        Random random = worldIn.func_175726_f(position).func_76617_a(987234911L);
++        MinecraftServer minecraftserver = worldIn.func_73046_m();
+         Rotation[] arotation = Rotation.values();
+         Rotation rotation = arotation[random.nextInt(arotation.length)];
+         int i = random.nextInt(field_189906_q.length);
+-        TemplateManager templatemanager = p_180709_1_.func_72860_G().func_186340_h();
++        TemplateManager templatemanager = worldIn.func_72860_G().func_186340_h();
+         Template template = templatemanager.func_186237_a(minecraftserver, field_189906_q[i]);
+         Template template1 = templatemanager.func_186237_a(minecraftserver, field_189907_r[i]);
+-        ChunkPos chunkpos = new ChunkPos(p_180709_3_);
++        ChunkPos chunkpos = new ChunkPos(position);
+         StructureBoundingBox structureboundingbox = new StructureBoundingBox(chunkpos.func_180334_c(), 0, chunkpos.func_180333_d(), chunkpos.func_180332_e(), 256, chunkpos.func_180330_f());
+         PlacementSettings placementsettings = (new PlacementSettings()).func_186220_a(rotation).func_186223_a(structureboundingbox).func_189950_a(random);
+         BlockPos blockpos = template.func_186257_a(rotation);
+@@ -56,16 +56,16 @@
+         {
+             for (int j1 = 0; j1 < blockpos.func_177958_n(); ++j1)
+             {
+-                l = Math.min(l, p_180709_1_.func_189649_b(p_180709_3_.func_177958_n() + i1 + j, p_180709_3_.func_177952_p() + j1 + k));
++                l = Math.min(l, worldIn.func_189649_b(position.func_177958_n() + i1 + j, position.func_177952_p() + j1 + k));
+             }
+         }
+ 
+         int k1 = Math.max(l - 15 - random.nextInt(10), 10);
+-        BlockPos blockpos1 = template.func_189961_a(p_180709_3_.func_177982_a(j, k1, k), Mirror.NONE, rotation);
++        BlockPos blockpos1 = template.func_189961_a(position.func_177982_a(j, k1, k), Mirror.NONE, rotation);
+         placementsettings.func_189946_a(0.9F);
+-        template.func_189962_a(p_180709_1_, blockpos1, placementsettings, 20);
++        template.func_189962_a(worldIn, blockpos1, placementsettings, 20);
+         placementsettings.func_189946_a(0.1F);
+-        template1.func_189962_a(p_180709_1_, blockpos1, placementsettings, 20);
++        template1.func_189962_a(worldIn, blockpos1, placementsettings, 20);
+         return true;
+     }
+ }

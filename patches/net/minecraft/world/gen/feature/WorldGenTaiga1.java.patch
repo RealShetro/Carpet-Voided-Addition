@@ -1,0 +1,111 @@
+--- ../src-base/minecraft/net/minecraft/world/gen/feature/WorldGenTaiga1.java
++++ ../src-work/minecraft/net/minecraft/world/gen/feature/WorldGenTaiga1.java
+@@ -22,22 +22,22 @@
+         super(false);
+     }
+ 
+-    public boolean func_180709_b(World p_180709_1_, Random p_180709_2_, BlockPos p_180709_3_)
++    public boolean generate_vanilla(World worldIn, Random rand, BlockPos position)
+     {
+-        int i = p_180709_2_.nextInt(5) + 7;
+-        int j = i - p_180709_2_.nextInt(2) - 3;
++        int i = rand.nextInt(5) + 7;
++        int j = i - rand.nextInt(2) - 3;
+         int k = i - j;
+-        int l = 1 + p_180709_2_.nextInt(k + 1);
++        int l = 1 + rand.nextInt(k + 1);
+ 
+-        if (p_180709_3_.func_177956_o() >= 1 && p_180709_3_.func_177956_o() + i + 1 <= 256)
++        if (position.func_177956_o() >= 1 && position.func_177956_o() + i + 1 <= 256)
+         {
+             boolean flag = true;
+ 
+-            for (int i1 = p_180709_3_.func_177956_o(); i1 <= p_180709_3_.func_177956_o() + 1 + i && flag; ++i1)
++            for (int i1 = position.func_177956_o(); i1 <= position.func_177956_o() + 1 + i && flag; ++i1)
+             {
+                 int j1 = 1;
+ 
+-                if (i1 - p_180709_3_.func_177956_o() < j)
++                if (i1 - position.func_177956_o() < j)
+                 {
+                     j1 = 0;
+                 }
+@@ -48,13 +48,13 @@
+ 
+                 BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+ 
+-                for (int k1 = p_180709_3_.func_177958_n() - j1; k1 <= p_180709_3_.func_177958_n() + j1 && flag; ++k1)
++                for (int k1 = position.func_177958_n() - j1; k1 <= position.func_177958_n() + j1 && flag; ++k1)
+                 {
+-                    for (int l1 = p_180709_3_.func_177952_p() - j1; l1 <= p_180709_3_.func_177952_p() + j1 && flag; ++l1)
++                    for (int l1 = position.func_177952_p() - j1; l1 <= position.func_177952_p() + j1 && flag; ++l1)
+                     {
+                         if (i1 >= 0 && i1 < 256)
+                         {
+-                            if (!this.func_150523_a(p_180709_1_.func_180495_p(blockpos$mutableblockpos.func_181079_c(k1, i1, l1)).func_177230_c()))
++                            if (!this.func_150523_a(worldIn.func_180495_p(blockpos$mutableblockpos.func_181079_c(k1, i1, l1)).func_177230_c()))
+                             {
+                                 flag = false;
+                             }
+@@ -73,36 +73,36 @@
+             }
+             else
+             {
+-                Block block = p_180709_1_.func_180495_p(p_180709_3_.func_177977_b()).func_177230_c();
++                Block block = worldIn.func_180495_p(position.func_177977_b()).func_177230_c();
+ 
+-                if ((block == Blocks.field_150349_c || block == Blocks.field_150346_d) && p_180709_3_.func_177956_o() < 256 - i - 1)
++                if ((block == Blocks.field_150349_c || block == Blocks.field_150346_d) && position.func_177956_o() < 256 - i - 1)
+                 {
+-                    this.func_175921_a(p_180709_1_, p_180709_3_.func_177977_b());
++                    this.func_175921_a(worldIn, position.func_177977_b());
+                     int k2 = 0;
+ 
+-                    for (int l2 = p_180709_3_.func_177956_o() + i; l2 >= p_180709_3_.func_177956_o() + j; --l2)
++                    for (int l2 = position.func_177956_o() + i; l2 >= position.func_177956_o() + j; --l2)
+                     {
+-                        for (int j3 = p_180709_3_.func_177958_n() - k2; j3 <= p_180709_3_.func_177958_n() + k2; ++j3)
++                        for (int j3 = position.func_177958_n() - k2; j3 <= position.func_177958_n() + k2; ++j3)
+                         {
+-                            int k3 = j3 - p_180709_3_.func_177958_n();
++                            int k3 = j3 - position.func_177958_n();
+ 
+-                            for (int i2 = p_180709_3_.func_177952_p() - k2; i2 <= p_180709_3_.func_177952_p() + k2; ++i2)
++                            for (int i2 = position.func_177952_p() - k2; i2 <= position.func_177952_p() + k2; ++i2)
+                             {
+-                                int j2 = i2 - p_180709_3_.func_177952_p();
++                                int j2 = i2 - position.func_177952_p();
+ 
+                                 if (Math.abs(k3) != k2 || Math.abs(j2) != k2 || k2 <= 0)
+                                 {
+                                     BlockPos blockpos = new BlockPos(j3, l2, i2);
+ 
+-                                    if (!p_180709_1_.func_180495_p(blockpos).func_185913_b())
++                                    if (!worldIn.func_180495_p(blockpos).func_185913_b())
+                                     {
+-                                        this.func_175903_a(p_180709_1_, blockpos, field_181637_b);
++                                        this.func_175903_a(worldIn, blockpos, field_181637_b);
+                                     }
+                                 }
+                             }
+                         }
+ 
+-                        if (k2 >= 1 && l2 == p_180709_3_.func_177956_o() + j + 1)
++                        if (k2 >= 1 && l2 == position.func_177956_o() + j + 1)
+                         {
+                             --k2;
+                         }
+@@ -114,11 +114,11 @@
+ 
+                     for (int i3 = 0; i3 < i - 1; ++i3)
+                     {
+-                        Material material = p_180709_1_.func_180495_p(p_180709_3_.func_177981_b(i3)).func_185904_a();
++                        Material material = worldIn.func_180495_p(position.func_177981_b(i3)).func_185904_a();
+ 
+                         if (material == Material.field_151579_a || material == Material.field_151584_j)
+                         {
+-                            this.func_175903_a(p_180709_1_, p_180709_3_.func_177981_b(i3), field_181636_a);
++                            this.func_175903_a(worldIn, position.func_177981_b(i3), field_181636_a);
+                         }
+                     }
+ 

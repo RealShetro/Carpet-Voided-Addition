@@ -1,0 +1,69 @@
+--- ../src-base/minecraft/net/minecraft/init/Bootstrap.java
++++ ../src-work/minecraft/net/minecraft/init/Bootstrap.java
+@@ -1,14 +1,20 @@
+ package net.minecraft.init;
+ 
++import carpet.helpers.BetterDispenser;
+ import com.mojang.authlib.GameProfile;
++
++import carpet.CarpetSettings;
++
+ import java.io.File;
+ import java.io.PrintStream;
+ import java.util.Random;
+ import java.util.UUID;
+ import net.minecraft.advancements.AdvancementManager;
+ import net.minecraft.block.Block;
++import net.minecraft.block.BlockDirectional;
+ import net.minecraft.block.BlockDispenser;
+ import net.minecraft.block.BlockFire;
++import net.minecraft.block.BlockHorizontal;
+ import net.minecraft.block.BlockLiquid;
+ import net.minecraft.block.BlockPumpkin;
+ import net.minecraft.block.BlockShulkerBox;
+@@ -16,6 +22,7 @@
+ import net.minecraft.block.BlockTNT;
+ import net.minecraft.block.material.Material;
+ import net.minecraft.block.state.IBlockState;
++import net.minecraft.crash.CrashReport;
+ import net.minecraft.dispenser.BehaviorDefaultDispenseItem;
+ import net.minecraft.dispenser.BehaviorProjectileDispense;
+ import net.minecraft.dispenser.IBehaviorDispenseItem;
+@@ -58,11 +65,7 @@
+ import net.minecraft.tileentity.TileEntityDispenser;
+ import net.minecraft.tileentity.TileEntityShulkerBox;
+ import net.minecraft.tileentity.TileEntitySkull;
+-import net.minecraft.util.EnumFacing;
+-import net.minecraft.util.LoggingPrintStream;
+-import net.minecraft.util.SoundCategory;
+-import net.minecraft.util.SoundEvent;
+-import net.minecraft.util.StringUtils;
++import net.minecraft.util.*;
+ import net.minecraft.util.math.BlockPos;
+ import net.minecraft.world.World;
+ import net.minecraft.world.biome.Biome;
+@@ -476,6 +479,9 @@
+             }
+         });
+ 
++        // Carpet Dispenser addons XCOM-CARPET
++        BetterDispenser.dispenserAddons();
++
+         for (EnumDyeColor enumdyecolor : EnumDyeColor.values())
+         {
+             BlockDispenser.field_149943_a.func_82595_a(Item.func_150898_a(BlockShulkerBox.func_190952_a(enumdyecolor)), new Bootstrap.BehaviorDispenseShulkerBox());
+@@ -486,6 +492,14 @@
+     {
+         if (!field_151355_a)
+         {
++            // Fix the crash report without carpet rule. DON'T PUT A GOD-DAMN CARPET RULE FOR THIS OR I WILL GET MAD!
++            // Mojang even added this in 16. CARPET-XCOM
++            // VasCM - Put a goddamn carpet rule for this so that Xcom can get mad
++            // This rule defaults to true, and by the time of this line of code, carpet rules are not initialized
++            // so regardless of the value of this rule set in carpets.conf, this crash report fix will work anyway
++            // That is, I can annoy people without causing any real trouble.
++            if (CarpetSettings.goddamnCarpetRule) CrashReport.func_85055_a(new Exception(), "Dummy");
++
+             field_151355_a = true;
+             func_179868_d();
+             SoundEvent.func_187504_b();

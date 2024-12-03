@@ -1,0 +1,21 @@
+--- ../src-base/minecraft/net/minecraft/command/ServerCommandManager.java
++++ ../src-work/minecraft/net/minecraft/command/ServerCommandManager.java
+@@ -33,6 +33,8 @@
+ import net.minecraft.util.text.TextComponentTranslation;
+ import net.minecraft.util.text.TextFormatting;
+ 
++import carpet.commands.CarpetCommands;
++
+ public class ServerCommandManager extends CommandHandler implements ICommandListener
+ {
+     private final MinecraftServer field_184880_a;
+@@ -90,6 +92,9 @@
+         this.func_71560_a(new CommandReload());
+         this.func_71560_a(new CommandFunction());
+ 
++        // Don't register commands here directly to avoid frequent patch merge conflicts
++        CarpetCommands.register(this);
++
+         if (p_i46985_1_.func_71262_S())
+         {
+             this.func_71560_a(new CommandOp());

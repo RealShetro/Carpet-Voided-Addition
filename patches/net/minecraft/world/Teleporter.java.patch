@@ -1,0 +1,343 @@
+--- ../src-base/minecraft/net/minecraft/world/Teleporter.java
++++ ../src-work/minecraft/net/minecraft/world/Teleporter.java
+@@ -1,25 +1,34 @@
+ package net.minecraft.world;
+ 
++import carpet.CarpetSettings;
++import carpet.logging.LoggerRegistry;
++import carpet.logging.logHelpers.PortalCaching;
+ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+ import it.unimi.dsi.fastutil.objects.ObjectIterator;
+-import java.util.Random;
+ import net.minecraft.block.BlockPortal;
+ import net.minecraft.block.state.IBlockState;
+ import net.minecraft.block.state.pattern.BlockPattern;
+ import net.minecraft.entity.Entity;
+ import net.minecraft.entity.player.EntityPlayerMP;
+ import net.minecraft.init.Blocks;
++import net.minecraft.server.MinecraftServer;
+ import net.minecraft.util.EnumFacing;
+ import net.minecraft.util.math.BlockPos;
+ import net.minecraft.util.math.ChunkPos;
+ import net.minecraft.util.math.MathHelper;
++import net.minecraft.util.math.Vec3d;
+ 
++import java.util.ArrayList;
++import java.util.Random;
++
+ public class Teleporter
+ {
+     private final WorldServer field_85192_a;
+     private final Random field_77187_a;
+     private final Long2ObjectMap<Teleporter.PortalPosition> field_85191_c = new Long2ObjectOpenHashMap<Teleporter.PortalPosition>(4096);
++    //CM var
++    private final Long2ObjectMap<Teleporter.PortalPosition> destinationHistoryCache = new Long2ObjectOpenHashMap(4096); //carpet mod
+ 
+     public Teleporter(WorldServer p_i1963_1_)
+     {
+@@ -69,49 +78,63 @@
+ 
+     public boolean func_180620_b(Entity p_180620_1_, float p_180620_2_)
+     {
+-        int i = 128;
+-        double d0 = -1.0D;
+-        int j = MathHelper.func_76128_c(p_180620_1_.field_70165_t);
+-        int k = MathHelper.func_76128_c(p_180620_1_.field_70161_v);
+-        boolean flag = true;
+-        BlockPos blockpos = BlockPos.field_177992_a;
+-        long l = ChunkPos.func_77272_a(j, k);
++        int aUnusedVariableWithValue128 = 128;
++        double minimalDistance = -1.0D;
++        int entityBlockX = MathHelper.func_76128_c(p_180620_1_.field_70165_t);
++        int entityBlockZ = MathHelper.func_76128_c(p_180620_1_.field_70161_v);
++        boolean cacheMissed = true;
++        boolean flag_cm = true; // CM
++        BlockPos foundPortalPos = BlockPos.field_177992_a;
++        long packedEntityPos = ChunkPos.func_77272_a(entityBlockX, entityBlockZ);
+ 
+-        if (this.field_85191_c.containsKey(l))
++        if (this.field_85191_c.containsKey(packedEntityPos))
+         {
+-            Teleporter.PortalPosition teleporter$portalposition = (Teleporter.PortalPosition)this.field_85191_c.get(l);
+-            d0 = 0.0D;
+-            blockpos = teleporter$portalposition;
+-            teleporter$portalposition.field_85087_d = this.field_85192_a.func_82737_E();
+-            flag = false;
++            Teleporter.PortalPosition portalPosition = (Teleporter.PortalPosition)this.field_85191_c.get(packedEntityPos);
++            minimalDistance = 0.0D;
++            foundPortalPos = portalPosition;
++            portalPosition.field_85087_d = this.field_85192_a.func_82737_E();
++            cacheMissed = false;
+         }
+-        else
++        else if (CarpetSettings.portalCaching && this.destinationHistoryCache.containsKey(packedEntityPos)) // potential best candidate for linkage.
+         {
+-            BlockPos blockpos3 = new BlockPos(p_180620_1_);
++            Teleporter.PortalPosition teleporter$portalposition_cm = (Teleporter.PortalPosition)this.destinationHistoryCache.get(packedEntityPos);
++            if (this.field_85192_a.func_180495_p(teleporter$portalposition_cm).func_177230_c() == Blocks.field_150427_aO)
++            //just to verify nobody is cheating the system with update suppression
++            {
++                minimalDistance = 0.0D;
++                foundPortalPos = teleporter$portalposition_cm;
++                flag_cm = false;
++            }
++        }
++            /* end */
++        if (minimalDistance < 0.0D)
++        {
++            BlockPos entityPos = new BlockPos(p_180620_1_);
+ 
+-            for (int i1 = -128; i1 <= 128; ++i1)
++            for (int dx = -128; dx <= 128; ++dx)
+             {
+-                BlockPos blockpos2;
++                BlockPos nextPos;
+ 
+-                for (int j1 = -128; j1 <= 128; ++j1)
++                for (int dz = -128; dz <= 128; ++dz)
+                 {
+-                    for (BlockPos blockpos1 = blockpos3.func_177982_a(i1, this.field_85192_a.func_72940_L() - 1 - blockpos3.func_177956_o(), j1); blockpos1.func_177956_o() >= 0; blockpos1 = blockpos2)
++                    for (BlockPos searchedPos = entityPos.func_177982_a(dx, this.field_85192_a.func_72940_L() - 1 - entityPos.func_177956_o(), dz);
++                         searchedPos.func_177956_o() >= 0; searchedPos = nextPos)
+                     {
+-                        blockpos2 = blockpos1.func_177977_b();
++                        nextPos = searchedPos.func_177977_b();
+ 
+-                        if (this.field_85192_a.func_180495_p(blockpos1).func_177230_c() == Blocks.field_150427_aO)
++                        if (this.field_85192_a.func_180495_p(searchedPos).func_177230_c() == Blocks.field_150427_aO)
+                         {
+-                            for (blockpos2 = blockpos1.func_177977_b(); this.field_85192_a.func_180495_p(blockpos2).func_177230_c() == Blocks.field_150427_aO; blockpos2 = blockpos2.func_177977_b())
++                            for (nextPos = searchedPos.func_177977_b(); this.field_85192_a.func_180495_p(nextPos).func_177230_c() == Blocks.field_150427_aO; nextPos = nextPos.func_177977_b())
+                             {
+-                                blockpos1 = blockpos2;
++                                searchedPos = nextPos;
+                             }
+ 
+-                            double d1 = blockpos1.func_177951_i(blockpos3);
++                            double searchedDistance = searchedPos.func_177951_i(entityPos);
+ 
+-                            if (d0 < 0.0D || d1 < d0)
++                            if (minimalDistance < 0.0D || searchedDistance < minimalDistance)
+                             {
+-                                d0 = d1;
+-                                blockpos = blockpos1;
++                                minimalDistance = searchedDistance;
++                                foundPortalPos = searchedPos;
+                             }
+                         }
+                     }
+@@ -119,32 +142,73 @@
+             }
+         }
+ 
+-        if (d0 >= 0.0D)
++        if (minimalDistance >= 0.0D)
+         {
+-            if (flag)
++            if (cacheMissed)
+             {
+-                this.field_85191_c.put(l, new Teleporter.PortalPosition(blockpos, this.field_85192_a.func_82737_E()));
++                this.field_85191_c.put(packedEntityPos,
++                        new Teleporter.PortalPosition(foundPortalPos, this.field_85192_a.func_82737_E(),
++                                new Vec3d(p_180620_1_.field_70165_t, p_180620_1_.field_70163_u, p_180620_1_.field_70161_v)));
+             }
++            /* carpet mod */
++            if (CarpetSettings.portalCaching && (cacheMissed || flag_cm))
++            {
++                //its timeless
++                this.destinationHistoryCache.put(packedEntityPos, new Teleporter.PortalPosition(foundPortalPos, 0L, new Vec3d(p_180620_1_.field_70165_t, p_180620_1_.field_70163_u, p_180620_1_.field_70161_v)));
++            }
++            /* carpet mod end */
+ 
+-            double d5 = (double)blockpos.func_177958_n() + 0.5D;
+-            double d7 = (double)blockpos.func_177952_p() + 0.5D;
+-            BlockPattern.PatternHelper blockpattern$patternhelper = Blocks.field_150427_aO.func_181089_f(this.field_85192_a, blockpos);
+-            boolean flag1 = blockpattern$patternhelper.func_177669_b().func_176746_e().func_176743_c() == EnumFacing.AxisDirection.NEGATIVE;
+-            double d2 = blockpattern$patternhelper.func_177669_b().func_176740_k() == EnumFacing.Axis.X ? (double)blockpattern$patternhelper.func_181117_a().func_177952_p() : (double)blockpattern$patternhelper.func_181117_a().func_177958_n();
+-            double d6 = (double)(blockpattern$patternhelper.func_181117_a().func_177956_o() + 1) - p_180620_1_.func_181014_aG().field_72448_b * (double)blockpattern$patternhelper.func_181119_e();
++            double teleportedX = (double) foundPortalPos.func_177958_n() + 0.5D;
++            double teleportedZ = (double) foundPortalPos.func_177952_p() + 0.5D;
++            BlockPattern.PatternHelper portalPatternHelper = Blocks.field_150427_aO.func_181089_f(this.field_85192_a, foundPortalPos);
++            // forward = facing perpendicular of the portal with the most number of air blocks
++            // right = just right of forward, up = up
++            // The last portal vec is a vector
++            //  with its x entry storing the percentage of the entity's horizontal position in the portal
++            //  and y entry storing the percentage of the entity's vertical position in the portal
+ 
+-            if (flag1)
++            boolean isRightNegative = portalPatternHelper.func_177669_b().func_176746_e().func_176743_c() == EnumFacing.AxisDirection.NEGATIVE;
++            double portalCornerAxisCoord = portalPatternHelper.func_177669_b().func_176740_k() == EnumFacing.Axis.X ?
++                    (double)portalPatternHelper.func_181117_a().func_177952_p() :
++                    (double)portalPatternHelper.func_181117_a().func_177958_n();
++            double teleportedY = (double)(portalPatternHelper.func_181117_a().func_177956_o() + 1)
++                    - p_180620_1_.func_181014_aG().field_72448_b * (double)portalPatternHelper.func_181119_e();
++
++            if (isRightNegative)
+             {
+-                ++d2;
++                ++portalCornerAxisCoord;
+             }
++            
++            //CM portalSuffocationFix
++            //removed offset calculation outside of the if statement
+ 
+-            if (blockpattern$patternhelper.func_177669_b().func_176740_k() == EnumFacing.Axis.X)
++            double offset = (1.0D - p_180620_1_.func_181014_aG().field_72450_a) *
++                    (double)portalPatternHelper.func_181118_d() * (double)portalPatternHelper.func_177669_b().func_176746_e().func_176743_c().func_179524_a();
++            if (CarpetSettings.portalSuffocationFix)
+             {
+-                d7 = d2 + (1.0D - p_180620_1_.func_181014_aG().field_72450_a) * (double)blockpattern$patternhelper.func_181118_d() * (double)blockpattern$patternhelper.func_177669_b().func_176746_e().func_176743_c().func_179524_a();
++                double entity_corrected_radius = 1.02*(double)p_180620_1_.field_70130_N/2;
++                if (entity_corrected_radius >= (double)portalPatternHelper.func_181118_d()-entity_corrected_radius)
++                {
++                    //entity is wider than portal, so will suffocate anyways, so place it directly in the middle
++                    entity_corrected_radius = (double)portalPatternHelper.func_181118_d()/2-0.001;
++                }
++                    
++                if (offset >= 0)
++                {
++                    offset = MathHelper.func_151237_a(offset, entity_corrected_radius, (double)portalPatternHelper.func_181118_d()-entity_corrected_radius);
++                }
++                else
++                {
++                    offset = MathHelper.func_151237_a(offset, -(double)portalPatternHelper.func_181118_d()+entity_corrected_radius, -entity_corrected_radius);
++                }
+             }
++            if (portalPatternHelper.func_177669_b().func_176740_k() == EnumFacing.Axis.X)
++            {
++                teleportedZ = portalCornerAxisCoord + offset;
++            }
+             else
+             {
+-                d5 = d2 + (1.0D - p_180620_1_.func_181014_aG().field_72450_a) * (double)blockpattern$patternhelper.func_181118_d() * (double)blockpattern$patternhelper.func_177669_b().func_176746_e().func_176743_c().func_179524_a();
++                teleportedX = portalCornerAxisCoord + offset;
+             }
+ 
+             float f = 0.0F;
+@@ -152,17 +216,18 @@
+             float f2 = 0.0F;
+             float f3 = 0.0F;
+ 
+-            if (blockpattern$patternhelper.func_177669_b().func_176734_d() == p_180620_1_.func_181012_aH())
++            // This part is the logic that preserves the entity's motion, and also pitch and yaw after TP
++            if (portalPatternHelper.func_177669_b().func_176734_d() == p_180620_1_.func_181012_aH())
+             {
+                 f = 1.0F;
+                 f1 = 1.0F;
+             }
+-            else if (blockpattern$patternhelper.func_177669_b().func_176734_d() == p_180620_1_.func_181012_aH().func_176734_d())
++            else if (portalPatternHelper.func_177669_b().func_176734_d() == p_180620_1_.func_181012_aH().func_176734_d())
+             {
+                 f = -1.0F;
+                 f1 = -1.0F;
+             }
+-            else if (blockpattern$patternhelper.func_177669_b().func_176734_d() == p_180620_1_.func_181012_aH().func_176746_e())
++            else if (portalPatternHelper.func_177669_b().func_176734_d() == p_180620_1_.func_181012_aH().func_176746_e())
+             {
+                 f2 = 1.0F;
+                 f3 = -1.0F;
+@@ -177,15 +242,22 @@
+             double d4 = p_180620_1_.field_70179_y;
+             p_180620_1_.field_70159_w = d3 * (double)f + d4 * (double)f3;
+             p_180620_1_.field_70179_y = d3 * (double)f2 + d4 * (double)f1;
+-            p_180620_1_.field_70177_z = p_180620_2_ - (float)(p_180620_1_.func_181012_aH().func_176734_d().func_176736_b() * 90) + (float)(blockpattern$patternhelper.func_177669_b().func_176736_b() * 90);
++            p_180620_1_.field_70177_z = p_180620_2_ - (float)(p_180620_1_.func_181012_aH().func_176734_d().func_176736_b() * 90) + (float)(portalPatternHelper.func_177669_b().func_176736_b() * 90);
+ 
+             if (p_180620_1_ instanceof EntityPlayerMP)
+             {
+-                ((EntityPlayerMP)p_180620_1_).field_71135_a.func_147364_a(d5, d6, d7, p_180620_1_.field_70177_z, p_180620_1_.field_70125_A);
++                ((EntityPlayerMP)p_180620_1_).field_71135_a.func_147364_a(teleportedX, teleportedY, teleportedZ, p_180620_1_.field_70177_z, p_180620_1_.field_70125_A);
++                /*
++                 * Resets the players postion after move to fix a bug created in the teleportation. CARPET-XCOM
++                 */
++                if(CarpetSettings.portalTeleportationFix )
++                {
++                    ((EntityPlayerMP)p_180620_1_).field_71135_a.func_184342_d();
++                }
+             }
+             else
+             {
+-                p_180620_1_.func_70012_b(d5, d6, d7, p_180620_1_.field_70177_z, p_180620_1_.field_70125_A);
++                p_180620_1_.func_70012_b(teleportedX, teleportedY, teleportedZ, p_180620_1_.field_70177_z, p_180620_1_.field_70125_A);
+             }
+ 
+             return true;
+@@ -395,6 +467,12 @@
+                 }
+             }
+         }
++        /* carpet mod */
++        if (CarpetSettings.portalCaching)
++        {
++            clearHistoryCache();
++        }
++        /* carpet mod */
+ 
+         return true;
+     }
+@@ -405,27 +483,60 @@
+         {
+             long i = p_85189_1_ - 300L;
+             ObjectIterator<Teleporter.PortalPosition> objectiterator = this.field_85191_c.values().iterator();
+-
++            ArrayList<Vec3d> uncachings = new ArrayList<>();
+             while (objectiterator.hasNext())
+             {
+                 Teleporter.PortalPosition teleporter$portalposition = (Teleporter.PortalPosition)objectiterator.next();
+ 
+                 if (teleporter$portalposition == null || teleporter$portalposition.field_85087_d < i)
+                 {
++                    uncachings.add(teleporter$portalposition.cachingCoords);
+                     objectiterator.remove();
+                 }
+             }
++            /* carpet mod */
++            //failsafe - arbitrary, but will never happen in normal circumstances, 
++            //but who knows these freekin players.
++            if (CarpetSettings.portalCaching && this.destinationHistoryCache.size()> 65000 )
++            {
++                removeAllCachedEntries();
++            }
++
++            // Log portal uncaching CARPET-XCOM
++            if(LoggerRegistry.__portalCaching) {
++                PortalCaching.portalCachingCleared(field_85192_a, field_85191_c.size(), uncachings);
++            }
++            /* carpet mod end */
+         }
+     }
++    
++    //carpet mod
++    public void clearHistoryCache()
++    {
++        MinecraftServer minecraftserver = this.field_85192_a.func_73046_m();
++        for (int i=-1; i<2; i++)
++        {
++            WorldServer s = minecraftserver.func_71218_a(i);
++            s.func_85176_s().removeAllCachedEntries();
++        }
++    }
++    
++    //carpet mod
++    public void removeAllCachedEntries()
++    {
++        this.destinationHistoryCache.clear();
++    }
+ 
+     public class PortalPosition extends BlockPos
+     {
+         public long field_85087_d;
++        public Vec3d cachingCoords;
+ 
+-        public PortalPosition(BlockPos p_i45747_2_, long p_i45747_3_)
++        public PortalPosition(BlockPos pos, long lastUpdate, Vec3d vec)
+         {
+-            super(p_i45747_2_.func_177958_n(), p_i45747_2_.func_177956_o(), p_i45747_2_.func_177952_p());
+-            this.field_85087_d = p_i45747_3_;
++            super(pos.func_177958_n(), pos.func_177956_o(), pos.func_177952_p());
++            cachingCoords = vec;
++            this.field_85087_d = lastUpdate;
+         }
+     }
+ }

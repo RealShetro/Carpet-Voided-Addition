@@ -1,0 +1,395 @@
+--- ../src-base/minecraft/net/minecraft/block/BlockRailBase.java
++++ ../src-work/minecraft/net/minecraft/block/BlockRailBase.java
+@@ -1,5 +1,6 @@
+ package net.minecraft.block;
+ 
++import carpet.CarpetSettings;
+ import com.google.common.collect.Lists;
+ import java.util.List;
+ import javax.annotation.Nullable;
+@@ -117,6 +118,7 @@
+ 
+             if (flag && !p_189540_2_.func_175623_d(p_189540_3_))
+             {
++                if(CarpetSettings.duplicationFixMovingRail && BlockPistonBase.isBeingPushed(p_189540_3_)) return; // Added duplication fix for moving rails CARPET-XCOM
+                 this.func_176226_b(p_189540_2_, p_189540_3_, p_189540_1_, 0);
+                 p_189540_2_.func_175698_g(p_189540_3_);
+             }
+@@ -133,7 +135,10 @@
+ 
+     protected IBlockState func_176564_a(World p_176564_1_, BlockPos p_176564_2_, IBlockState p_176564_3_, boolean p_176564_4_)
+     {
+-        return p_176564_1_.field_72995_K ? p_176564_3_ : (new BlockRailBase.Rail(p_176564_1_, p_176564_2_, p_176564_3_)).func_180364_a(p_176564_1_.func_175640_z(p_176564_2_), p_176564_4_).func_180362_b();
++        return p_176564_1_.field_72995_K ? p_176564_3_ :
++                (new BlockRailBase.Rail(p_176564_1_, p_176564_2_, p_176564_3_))
++                        .func_180364_a(p_176564_1_.func_175640_z(p_176564_2_), p_176564_4_)
++                        .func_180362_b();
+     }
+ 
+     public EnumPushReaction func_149656_h(IBlockState p_149656_1_)
+@@ -327,18 +332,18 @@
+             }
+             else
+             {
+-                BlockPos lvt_2_1_ = p_180697_1_.func_177984_a();
+-                iblockstate = this.field_150660_b.func_180495_p(lvt_2_1_);
++                BlockPos pos1 = p_180697_1_.func_177984_a();
++                iblockstate = this.field_150660_b.func_180495_p(pos1);
+ 
+                 if (BlockRailBase.func_176563_d(iblockstate))
+                 {
+-                    return BlockRailBase.this.new Rail(this.field_150660_b, lvt_2_1_, iblockstate);
++                    return BlockRailBase.this.new Rail(this.field_150660_b, pos1, iblockstate);
+                 }
+                 else
+                 {
+-                    lvt_2_1_ = p_180697_1_.func_177977_b();
+-                    iblockstate = this.field_150660_b.func_180495_p(lvt_2_1_);
+-                    return BlockRailBase.func_176563_d(iblockstate) ? BlockRailBase.this.new Rail(this.field_150660_b, lvt_2_1_, iblockstate) : null;
++                    pos1 = p_180697_1_.func_177977_b();
++                    iblockstate = this.field_150660_b.func_180495_p(pos1);
++                    return BlockRailBase.func_176563_d(iblockstate) ? BlockRailBase.this.new Rail(this.field_150660_b, pos1, iblockstate) : null;
+                 }
+             }
+         }
+@@ -386,81 +391,84 @@
+         private void func_150645_c(BlockRailBase.Rail p_150645_1_)
+         {
+             this.field_150657_g.add(p_150645_1_.field_180367_c);
+-            BlockPos blockpos = this.field_180367_c.func_177978_c();
+-            BlockPos blockpos1 = this.field_180367_c.func_177968_d();
+-            BlockPos blockpos2 = this.field_180367_c.func_177976_e();
+-            BlockPos blockpos3 = this.field_180367_c.func_177974_f();
+-            boolean flag = this.func_180363_c(blockpos);
+-            boolean flag1 = this.func_180363_c(blockpos1);
+-            boolean flag2 = this.func_180363_c(blockpos2);
+-            boolean flag3 = this.func_180363_c(blockpos3);
+-            BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = null;
++            BlockPos posN = this.field_180367_c.func_177978_c();
++            BlockPos posS = this.field_180367_c.func_177968_d();
++            BlockPos posW = this.field_180367_c.func_177976_e();
++            BlockPos posE = this.field_180367_c.func_177974_f();
++            boolean pointN = this.func_180363_c(posN);
++            boolean pointS = this.func_180363_c(posS);
++            boolean pointW = this.func_180363_c(posW);
++            boolean pointE = this.func_180363_c(posE);
++            BlockRailBase.EnumRailDirection railDirection = null;
+ 
+-            if (flag || flag1)
++            // Step 10: Points in NS or EW if there is a connection present, with EW overriding NS
++            if (pointN || pointS)
+             {
+-                blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.NORTH_SOUTH;
++                railDirection = BlockRailBase.EnumRailDirection.NORTH_SOUTH;
+             }
+ 
+-            if (flag2 || flag3)
++            if (pointW || pointE)
+             {
+-                blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.EAST_WEST;
++                railDirection = BlockRailBase.EnumRailDirection.EAST_WEST;
+             }
+ 
++            // Step 11: If this is a normal rail, try to curve with priority NE, NW, SW, SE
+             if (!this.field_150656_f)
+             {
+-                if (flag1 && flag3 && !flag && !flag2)
++                if (pointS && pointE && !pointN && !pointW)
+                 {
+-                    blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.SOUTH_EAST;
++                    railDirection = BlockRailBase.EnumRailDirection.SOUTH_EAST;
+                 }
+ 
+-                if (flag1 && flag2 && !flag && !flag3)
++                if (pointS && pointW && !pointN && !pointE)
+                 {
+-                    blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.SOUTH_WEST;
++                    railDirection = BlockRailBase.EnumRailDirection.SOUTH_WEST;
+                 }
+ 
+-                if (flag && flag2 && !flag1 && !flag3)
++                if (pointN && pointW && !pointS && !pointE)
+                 {
+-                    blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.NORTH_WEST;
++                    railDirection = BlockRailBase.EnumRailDirection.NORTH_WEST;
+                 }
+ 
+-                if (flag && flag3 && !flag1 && !flag2)
++                if (pointN && pointE && !pointS && !pointW)
+                 {
+-                    blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.NORTH_EAST;
++                    railDirection = BlockRailBase.EnumRailDirection.NORTH_EAST;
+                 }
+             }
+ 
+-            if (blockrailbase$enumraildirection == BlockRailBase.EnumRailDirection.NORTH_SOUTH)
++            // Step 12: If this rail points NS up to Step 11, try to ascend with S override N
++            if (railDirection == BlockRailBase.EnumRailDirection.NORTH_SOUTH)
+             {
+-                if (BlockRailBase.func_176562_d(this.field_150660_b, blockpos.func_177984_a()))
++                if (BlockRailBase.func_176562_d(this.field_150660_b, posN.func_177984_a()))
+                 {
+-                    blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.ASCENDING_NORTH;
++                    railDirection = BlockRailBase.EnumRailDirection.ASCENDING_NORTH;
+                 }
+ 
+-                if (BlockRailBase.func_176562_d(this.field_150660_b, blockpos1.func_177984_a()))
++                if (BlockRailBase.func_176562_d(this.field_150660_b, posS.func_177984_a()))
+                 {
+-                    blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.ASCENDING_SOUTH;
++                    railDirection = BlockRailBase.EnumRailDirection.ASCENDING_SOUTH;
+                 }
+             }
+-
+-            if (blockrailbase$enumraildirection == BlockRailBase.EnumRailDirection.EAST_WEST)
++            // Step 13: If this rail points EW up to Step 11, try to ascend with W override E
++            if (railDirection == BlockRailBase.EnumRailDirection.EAST_WEST)
+             {
+-                if (BlockRailBase.func_176562_d(this.field_150660_b, blockpos3.func_177984_a()))
++                if (BlockRailBase.func_176562_d(this.field_150660_b, posE.func_177984_a()))
+                 {
+-                    blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.ASCENDING_EAST;
++                    railDirection = BlockRailBase.EnumRailDirection.ASCENDING_EAST;
+                 }
+ 
+-                if (BlockRailBase.func_176562_d(this.field_150660_b, blockpos2.func_177984_a()))
++                if (BlockRailBase.func_176562_d(this.field_150660_b, posW.func_177984_a()))
+                 {
+-                    blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.ASCENDING_WEST;
++                    railDirection = BlockRailBase.EnumRailDirection.ASCENDING_WEST;
+                 }
+             }
+-
+-            if (blockrailbase$enumraildirection == null)
++            // This will never be run
++            if (railDirection == null)
+             {
+-                blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.NORTH_SOUTH;
++                railDirection = BlockRailBase.EnumRailDirection.NORTH_SOUTH;
+             }
+-
+-            this.field_180366_e = this.field_180366_e.func_177226_a(this.field_180365_d.func_176560_l(), blockrailbase$enumraildirection);
++            // Step 14: Update the block in the world
++            this.field_180366_e = this.field_180366_e.func_177226_a(this.field_180365_d.func_176560_l(), railDirection);
+             this.field_150660_b.func_180501_a(this.field_180367_c, this.field_180366_e, 3);
+         }
+ 
+@@ -481,144 +489,157 @@
+ 
+         public BlockRailBase.Rail func_180364_a(boolean p_180364_1_, boolean p_180364_2_)
+         {
+-            BlockPos blockpos = this.field_180367_c.func_177978_c();
+-            BlockPos blockpos1 = this.field_180367_c.func_177968_d();
+-            BlockPos blockpos2 = this.field_180367_c.func_177976_e();
+-            BlockPos blockpos3 = this.field_180367_c.func_177974_f();
+-            boolean flag = this.func_180361_d(blockpos);
+-            boolean flag1 = this.func_180361_d(blockpos1);
+-            boolean flag2 = this.func_180361_d(blockpos2);
+-            boolean flag3 = this.func_180361_d(blockpos3);
+-            BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = null;
++            BlockPos posN = this.field_180367_c.func_177978_c();
++            BlockPos posS = this.field_180367_c.func_177968_d();
++            BlockPos posW = this.field_180367_c.func_177976_e();
++            BlockPos posE = this.field_180367_c.func_177974_f();
++            // Step 0: We call the rail to have a neighbor in a certain direction, if there is a rail
++            boolean hasNeighbourN = this.func_180361_d(posN);
++            boolean hasNeighbourS = this.func_180361_d(posS);
++            boolean hasNeighbourW = this.func_180361_d(posW);
++            boolean hasNeighbourE = this.func_180361_d(posE);
++            BlockRailBase.EnumRailDirection railDirection = null;
+ 
+-            if ((flag || flag1) && !flag2 && !flag3)
++            // Step 1: If there is a straight connection with a neighbor rail, and no neighbors in
++            //         a perpendicular direction, then connect straightly with EW overriding NS.
++            if ((hasNeighbourN || hasNeighbourS) && !hasNeighbourW && !hasNeighbourE)
+             {
+-                blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.NORTH_SOUTH;
++                railDirection = BlockRailBase.EnumRailDirection.NORTH_SOUTH;
+             }
+-
+-            if ((flag2 || flag3) && !flag && !flag1)
++            if ((hasNeighbourW || hasNeighbourE) && !hasNeighbourN && !hasNeighbourS)
+             {
+-                blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.EAST_WEST;
++                railDirection = BlockRailBase.EnumRailDirection.EAST_WEST;
+             }
+ 
++            // Step 2: For normal rails, if there are exactly 2 neighbors in perpendicular directions,
++            //         then connect curved, overriding Step 1, and in the priority NE, NW, SW, SE.
+             if (!this.field_150656_f)
+             {
+-                if (flag1 && flag3 && !flag && !flag2)
++                if (hasNeighbourS && hasNeighbourE && !hasNeighbourN && !hasNeighbourW)
+                 {
+-                    blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.SOUTH_EAST;
++                    railDirection = BlockRailBase.EnumRailDirection.SOUTH_EAST;
+                 }
+-
+-                if (flag1 && flag2 && !flag && !flag3)
++                if (hasNeighbourS && hasNeighbourW && !hasNeighbourN && !hasNeighbourE)
+                 {
+-                    blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.SOUTH_WEST;
++                    railDirection = BlockRailBase.EnumRailDirection.SOUTH_WEST;
+                 }
+-
+-                if (flag && flag2 && !flag1 && !flag3)
++                if (hasNeighbourN && hasNeighbourW && !hasNeighbourS && !hasNeighbourE)
+                 {
+-                    blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.NORTH_WEST;
++                    railDirection = BlockRailBase.EnumRailDirection.NORTH_WEST;
+                 }
+-
+-                if (flag && flag3 && !flag1 && !flag2)
++                if (hasNeighbourN && hasNeighbourE && !hasNeighbourS && !hasNeighbourW)
+                 {
+-                    blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.NORTH_EAST;
++                    railDirection = BlockRailBase.EnumRailDirection.NORTH_EAST;
+                 }
+             }
+ 
+-            if (blockrailbase$enumraildirection == null)
++            if (railDirection == null)
+             {
+-                if (flag || flag1)
++                // Step 3: If the rail direction is not already determined, then connect straightly to any
++                //         neighbor with EW overriding NS
++                if (hasNeighbourN || hasNeighbourS)
+                 {
+-                    blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.NORTH_SOUTH;
++                    railDirection = BlockRailBase.EnumRailDirection.NORTH_SOUTH;
+                 }
+ 
+-                if (flag2 || flag3)
++                if (hasNeighbourW || hasNeighbourE)
+                 {
+-                    blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.EAST_WEST;
++                    railDirection = BlockRailBase.EnumRailDirection.EAST_WEST;
+                 }
+ 
++                // Step 4: If the rail direction is not already determined in Step 2 (this implies that the rail
++                //         has either 0 or >=3 neighbors), and the rail is a normal rail, then curve the rail
++                //         based on its powered state. If powered, curve in the priority NW, NE, SW, SE, and
++                //         otherwise curve in the priority SE, SW, NE, NW
+                 if (!this.field_150656_f)
+                 {
+                     if (p_180364_1_)
+                     {
+-                        if (flag1 && flag3)
++                        if (hasNeighbourS && hasNeighbourE)
+                         {
+-                            blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.SOUTH_EAST;
++                            railDirection = BlockRailBase.EnumRailDirection.SOUTH_EAST;
+                         }
+ 
+-                        if (flag2 && flag1)
++                        if (hasNeighbourW && hasNeighbourS)
+                         {
+-                            blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.SOUTH_WEST;
++                            railDirection = BlockRailBase.EnumRailDirection.SOUTH_WEST;
+                         }
+ 
+-                        if (flag3 && flag)
++                        if (hasNeighbourE && hasNeighbourN)
+                         {
+-                            blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.NORTH_EAST;
++                            railDirection = BlockRailBase.EnumRailDirection.NORTH_EAST;
+                         }
+ 
+-                        if (flag && flag2)
++                        if (hasNeighbourN && hasNeighbourW)
+                         {
+-                            blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.NORTH_WEST;
++                            railDirection = BlockRailBase.EnumRailDirection.NORTH_WEST;
+                         }
+                     }
+                     else
+                     {
+-                        if (flag && flag2)
++                        if (hasNeighbourN && hasNeighbourW)
+                         {
+-                            blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.NORTH_WEST;
++                            railDirection = BlockRailBase.EnumRailDirection.NORTH_WEST;
+                         }
+ 
+-                        if (flag3 && flag)
++                        if (hasNeighbourE && hasNeighbourN)
+                         {
+-                            blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.NORTH_EAST;
++                            railDirection = BlockRailBase.EnumRailDirection.NORTH_EAST;
+                         }
+ 
+-                        if (flag2 && flag1)
++                        if (hasNeighbourW && hasNeighbourS)
+                         {
+-                            blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.SOUTH_WEST;
++                            railDirection = BlockRailBase.EnumRailDirection.SOUTH_WEST;
+                         }
+ 
+-                        if (flag1 && flag3)
++                        if (hasNeighbourS && hasNeighbourE)
+                         {
+-                            blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.SOUTH_EAST;
++                            railDirection = BlockRailBase.EnumRailDirection.SOUTH_EAST;
+                         }
+                     }
+                 }
+             }
+ 
+-            if (blockrailbase$enumraildirection == BlockRailBase.EnumRailDirection.NORTH_SOUTH)
++            // Step 5: If the direction currently determined is NS, seek to connect in an NS ascending state
++            if (railDirection == BlockRailBase.EnumRailDirection.NORTH_SOUTH)
+             {
+-                if (BlockRailBase.func_176562_d(this.field_150660_b, blockpos.func_177984_a()))
++                if (BlockRailBase.func_176562_d(this.field_150660_b, posN.func_177984_a()))
+                 {
+-                    blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.ASCENDING_NORTH;
++                    railDirection = BlockRailBase.EnumRailDirection.ASCENDING_NORTH;
+                 }
+ 
+-                if (BlockRailBase.func_176562_d(this.field_150660_b, blockpos1.func_177984_a()))
++                if (BlockRailBase.func_176562_d(this.field_150660_b, posS.func_177984_a()))
+                 {
+-                    blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.ASCENDING_SOUTH;
++                    railDirection = BlockRailBase.EnumRailDirection.ASCENDING_SOUTH;
+                 }
+             }
+-
+-            if (blockrailbase$enumraildirection == BlockRailBase.EnumRailDirection.EAST_WEST)
++            // Step 6: If the direction currently determined is EW, seek to connect in an EW ascending state
++            if (railDirection == BlockRailBase.EnumRailDirection.EAST_WEST)
+             {
+-                if (BlockRailBase.func_176562_d(this.field_150660_b, blockpos3.func_177984_a()))
++                if (BlockRailBase.func_176562_d(this.field_150660_b, posE.func_177984_a()))
+                 {
+-                    blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.ASCENDING_EAST;
++                    railDirection = BlockRailBase.EnumRailDirection.ASCENDING_EAST;
+                 }
+ 
+-                if (BlockRailBase.func_176562_d(this.field_150660_b, blockpos2.func_177984_a()))
++                if (BlockRailBase.func_176562_d(this.field_150660_b, posW.func_177984_a()))
+                 {
+-                    blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.ASCENDING_WEST;
++                    railDirection = BlockRailBase.EnumRailDirection.ASCENDING_WEST;
+                 }
+             }
+ 
+-            if (blockrailbase$enumraildirection == null)
++            // Step 7: If the direction is currently undetermined, then connect in NS
++            if (railDirection == null)
+             {
+-                blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.NORTH_SOUTH;
++                railDirection = BlockRailBase.EnumRailDirection.NORTH_SOUTH;
+             }
+ 
+-            this.func_180360_a(blockrailbase$enumraildirection);
+-            this.field_180366_e = this.field_180366_e.func_177226_a(this.field_180365_d.func_176560_l(), blockrailbase$enumraildirection);
++            // Step 8: Update the connectedRails field and the block state stored
++            this.func_180360_a(railDirection);
++            this.field_180366_e = this.field_180366_e.func_177226_a(this.field_180365_d.func_176560_l(), railDirection);
+ 
++            // Step 9: If this is an initial placement, or the state has changed, then update the block in the
++            //         world, and then update the first found rail state, by letting it connect to this rail,
++            //         if its filtered connections point to this rail, or it has 0 or 1 filtered connections.
+             if (p_180364_2_ || this.field_150660_b.func_180495_p(this.field_180367_c) != this.field_180366_e)
+             {
+                 this.field_150660_b.func_180501_a(this.field_180367_c, this.field_180366_e, 3);

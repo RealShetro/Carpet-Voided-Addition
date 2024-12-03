@@ -1,0 +1,54 @@
+--- ../src-base/minecraft/net/minecraft/block/BlockTripWire.java
++++ ../src-work/minecraft/net/minecraft/block/BlockTripWire.java
+@@ -3,6 +3,9 @@
+ import java.util.List;
+ import java.util.Random;
+ import javax.annotation.Nullable;
++
++import carpet.CarpetSettings;
++import carpet.helpers.ITTCrasher;
+ import net.minecraft.block.material.Material;
+ import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.properties.PropertyBool;
+@@ -23,7 +26,9 @@
+ import net.minecraft.world.IBlockAccess;
+ import net.minecraft.world.World;
+ 
+-public class BlockTripWire extends Block
++import redstone.multimeter.block.Meterable;
++
++public class BlockTripWire extends Block implements Meterable /* RSMM */, /* VasCM - calmITTCrashers */ ITTCrasher
+ {
+     public static final PropertyBool field_176293_a = PropertyBool.func_177716_a("powered");
+     public static final PropertyBool field_176294_M = PropertyBool.func_177716_a("attached");
+@@ -95,7 +100,7 @@
+         {
+             if (!p_176208_4_.func_184614_ca().func_190926_b() && p_176208_4_.func_184614_ca().func_77973_b() == Items.field_151097_aZ)
+             {
+-                p_176208_1_.func_180501_a(p_176208_2_, p_176208_3_.func_177226_a(field_176295_N, Boolean.valueOf(true)), 4);
++                p_176208_1_.func_180501_a(p_176208_2_, p_176208_3_.func_177226_a(field_176295_N, Boolean.valueOf(true)), CarpetSettings.blockStateSyncing ? 6 : 4);
+             }
+         }
+     }
+@@ -266,4 +271,21 @@
+     {
+         return BlockFaceShape.UNDEFINED;
+     }
++
++    // RSMM
++    @Override
++    public boolean isActive(World world, BlockPos pos, IBlockState state) {
++        return state.func_177229_b(field_176293_a);
++    }
++
++    @Override
++    public boolean wouldCrash(World worldIn, BlockPos pos, IBlockState state) {
++        List<? extends Entity > list = worldIn.func_72839_b(
++                null, state.func_185900_c(worldIn, pos).func_186670_a(pos));
++        if (list.isEmpty()) return false;
++        for (Entity entity: list) {
++            if (entity instanceof EntityPlayer) return false;
++        }
++        return true;
++    }
+ }

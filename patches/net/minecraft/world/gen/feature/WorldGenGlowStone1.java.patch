@@ -1,0 +1,50 @@
+--- ../src-base/minecraft/net/minecraft/world/gen/feature/WorldGenGlowStone1.java
++++ ../src-work/minecraft/net/minecraft/world/gen/feature/WorldGenGlowStone1.java
+@@ -9,31 +9,31 @@
+ 
+ public class WorldGenGlowStone1 extends WorldGenerator
+ {
+-    public boolean func_180709_b(World p_180709_1_, Random p_180709_2_, BlockPos p_180709_3_)
++    public boolean generate_vanilla(World worldIn, Random rand, BlockPos position)
+     {
+-        if (!p_180709_1_.func_175623_d(p_180709_3_))
++        if (!worldIn.func_175623_d(position))
+         {
+             return false;
+         }
+-        else if (p_180709_1_.func_180495_p(p_180709_3_.func_177984_a()).func_177230_c() != Blocks.field_150424_aL)
++        else if (worldIn.func_180495_p(position.func_177984_a()).func_177230_c() != Blocks.field_150424_aL)
+         {
+             return false;
+         }
+         else
+         {
+-            p_180709_1_.func_180501_a(p_180709_3_, Blocks.field_150426_aN.func_176223_P(), 2);
++            worldIn.func_180501_a(position, Blocks.field_150426_aN.func_176223_P(), 2);
+ 
+             for (int i = 0; i < 1500; ++i)
+             {
+-                BlockPos blockpos = p_180709_3_.func_177982_a(p_180709_2_.nextInt(8) - p_180709_2_.nextInt(8), -p_180709_2_.nextInt(12), p_180709_2_.nextInt(8) - p_180709_2_.nextInt(8));
++                BlockPos blockpos = position.func_177982_a(rand.nextInt(8) - rand.nextInt(8), -rand.nextInt(12), rand.nextInt(8) - rand.nextInt(8));
+ 
+-                if (p_180709_1_.func_180495_p(blockpos).func_185904_a() == Material.field_151579_a)
++                if (worldIn.func_180495_p(blockpos).func_185904_a() == Material.field_151579_a)
+                 {
+                     int j = 0;
+ 
+                     for (EnumFacing enumfacing : EnumFacing.values())
+                     {
+-                        if (p_180709_1_.func_180495_p(blockpos.func_177972_a(enumfacing)).func_177230_c() == Blocks.field_150426_aN)
++                        if (worldIn.func_180495_p(blockpos.func_177972_a(enumfacing)).func_177230_c() == Blocks.field_150426_aN)
+                         {
+                             ++j;
+                         }
+@@ -46,7 +46,7 @@
+ 
+                     if (j == 1)
+                     {
+-                        p_180709_1_.func_180501_a(blockpos, Blocks.field_150426_aN.func_176223_P(), 2);
++                        worldIn.func_180501_a(blockpos, Blocks.field_150426_aN.func_176223_P(), 2);
+                     }
+                 }
+             }

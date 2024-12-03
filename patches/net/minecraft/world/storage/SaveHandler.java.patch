@@ -1,0 +1,39 @@
+--- ../src-base/minecraft/net/minecraft/world/storage/SaveHandler.java
++++ ../src-work/minecraft/net/minecraft/world/storage/SaveHandler.java
+@@ -7,6 +7,8 @@
+ import java.io.FileOutputStream;
+ import java.io.IOException;
+ import javax.annotation.Nullable;
++
++import carpet.CarpetSettings;
+ import net.minecraft.entity.player.EntityPlayer;
+ import net.minecraft.nbt.CompressedStreamTools;
+ import net.minecraft.nbt.NBTTagCompound;
+@@ -179,8 +181,12 @@
+         try
+         {
+             NBTTagCompound nbttagcompound = p_75753_1_.func_189511_e(new NBTTagCompound());
+-            File file1 = new File(this.field_75771_c, p_75753_1_.func_189512_bd() + ".dat.tmp");
+-            File file2 = new File(this.field_75771_c, p_75753_1_.func_189512_bd() + ".dat");
++            // VasCM
++            String uuidString = CarpetSettings.useOfflineUUIDForPlayerData ?
++                    EntityPlayer.func_175147_b(p_75753_1_.func_70005_c_()).toString() :
++                    p_75753_1_.func_189512_bd();
++            File file1 = new File(this.field_75771_c, uuidString + ".dat.tmp");
++            File file2 = new File(this.field_75771_c, uuidString + ".dat");
+             CompressedStreamTools.func_74799_a(nbttagcompound, new FileOutputStream(file1));
+ 
+             if (file2.exists())
+@@ -203,7 +209,11 @@
+ 
+         try
+         {
+-            File file1 = new File(this.field_75771_c, p_75752_1_.func_189512_bd() + ".dat");
++            // VasCM
++            String uuidString = CarpetSettings.useOfflineUUIDForPlayerData ?
++                    EntityPlayer.func_175147_b(p_75752_1_.func_70005_c_()).toString() :
++                    p_75752_1_.func_189512_bd();
++            File file1 = new File(this.field_75771_c, uuidString + ".dat");
+ 
+             if (file1.exists() && file1.isFile())
+             {

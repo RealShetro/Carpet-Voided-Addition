@@ -1,0 +1,471 @@
+--- ../src-base/minecraft/net/minecraft/server/MinecraftServer.java
++++ ../src-work/minecraft/net/minecraft/server/MinecraftServer.java
+@@ -1,5 +1,8 @@
+ package net.minecraft.server;
+ 
++import carpet.helpers.ScoreboardDelta;
++import carpet.helpers.ThrowableSuppression;
++import carpet.utils.Messenger;
+ import com.google.common.collect.Lists;
+ import com.google.common.collect.Queues;
+ import com.google.common.util.concurrent.Futures;
+@@ -82,16 +85,46 @@
+ import net.minecraft.world.storage.ISaveFormat;
+ import net.minecraft.world.storage.ISaveHandler;
+ import net.minecraft.world.storage.WorldInfo;
++
++import redstone.multimeter.common.TickTask;
++import redstone.multimeter.helper.WorldHelper;
++
+ import org.apache.commons.lang3.Validate;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+ 
++import carpet.CarpetServer;
++import carpet.CarpetSettings;
++import carpet.carpetclient.CarpetClientChunkLogger;
++import carpet.helpers.LagSpikeHelper;
++import carpet.helpers.TickSpeed;
++import carpet.utils.CarpetProfiler;
++import carpet.utils.PistonFixes;
++import carpet.utils.TickingArea;
++
++import bjoels.CustomWhitelistMessage;
++import shetro.syncmatica.FileStorage;
++import shetro.syncmatica.SyncmaticManager;
++import shetro.syncmatica.Syncmatica;
++import shetro.syncmatica.communication.ServerCommunicationManager;
++
++//Bjoel2 imported
++import bjoels.CustomWhitelistMessage;
++//Bjoel2 end
++//Shetro imported
++import shetro.syncmatica.FileStorage;
++import shetro.syncmatica.SyncmaticManager;
++import shetro.syncmatica.Syncmatica;
++import shetro.syncmatica.communication.ServerCommunicationManager;
++//import shetro.chatbridge.ChatbridgeBridge;
++//Shetro end
++
+ public abstract class MinecraftServer implements ICommandSender, Runnable, IThreadListener, ISnooperInfo
+ {
+     private static final Logger field_147145_h = LogManager.getLogger();
+     public static final File field_152367_a = new File("usercache.json");
+     private final ISaveFormat field_71310_m;
+-    private final Snooper field_71307_n = new Snooper("server", this, func_130071_aq());
++    public Snooper field_71307_n = new Snooper("server", this, func_130071_aq()); // VasCM - changed access
+     private final File field_71308_o;
+     private final List<ITickable> field_71322_p = Lists.<ITickable>newArrayList();
+     public final ICommandManager field_71321_q;
+@@ -144,6 +177,10 @@
+ 
+     public MinecraftServer(File p_i47054_1_, Proxy p_i47054_2_, DataFixer p_i47054_3_, YggdrasilAuthenticationService p_i47054_4_, MinecraftSessionService p_i47054_5_, GameProfileRepository p_i47054_6_, PlayerProfileCache p_i47054_7_)
+     {
++    	//Shetro Chatbridge init
++    	//ChatbridgeBridge.init(this);
++        //Shetro end
++        CarpetServer.init(this); //CM init
+         this.field_110456_c = p_i47054_2_;
+         this.field_152364_T = p_i47054_4_;
+         this.field_147143_S = p_i47054_5_;
+@@ -273,11 +310,25 @@
+ 
+         this.field_71318_t.func_72364_a(this.field_71305_c);
+         this.func_147139_a(this.func_147135_j());
++        CarpetServer.onLoadAllWorlds(this);
+         this.func_71222_d();
++        CarpetServer.loadBots(this);
++        //Shetro Chatbridge on minecraft server started
++        //ChatbridgeBridge.onMinecraftServerStarted();
++        //Shetro end
+     }
+ 
+     protected void func_71222_d()
+     {
++    	//Shetro Syncmatica init
++        Syncmatica.initServer(
++                new ServerCommunicationManager(),
++                new FileStorage(),
++                new SyncmaticManager(),
++                !this.func_71262_S(),
++                this.func_71209_f(this.func_71270_I())
++        ).startup();
++        //Shetro end
+         int i = 16;
+         int j = 4;
+         int k = 192;
+@@ -285,25 +336,32 @@
+         int i1 = 0;
+         this.func_71192_d("menu.generatingTerrain");
+         int j1 = 0;
+-        field_147145_h.info("Preparing start region for level 0");
+-        WorldServer worldserver = this.field_71305_c[0];
+-        BlockPos blockpos = worldserver.func_175694_M();
+-        long k1 = func_130071_aq();
+-
+-        for (int l1 = -192; l1 <= 192 && this.func_71278_l(); l1 += 16)
++        if (CarpetSettings.tickingAreas)
+         {
+-            for (int i2 = -192; i2 <= 192 && this.func_71278_l(); i2 += 16)
+-            {
+-                long j2 = func_130071_aq();
++            TickingArea.initialChunkLoad(this, true);
++        }
++        if (!CarpetSettings.disableSpawnChunks)
++        {
++            field_147145_h.info("Preparing start region for level 0");
++            WorldServer worldserver = this.field_71305_c[0];
++            BlockPos blockpos = worldserver.func_175694_M();
++            long k1 = func_130071_aq();
+ 
+-                if (j2 - k1 > 1000L)
++            for (int l1 = -192; l1 <= 192 && this.func_71278_l(); l1 += 16)
++            {
++                for (int i2 = -192; i2 <= 192 && this.func_71278_l(); i2 += 16)
+                 {
+-                    this.func_71216_a_("Preparing spawn area", i1 * 100 / 625);
+-                    k1 = j2;
+-                }
++                    long j2 = func_130071_aq();
+ 
+-                ++i1;
+-                worldserver.func_72863_F().func_186025_d(blockpos.func_177958_n() + l1 >> 4, blockpos.func_177952_p() + i2 >> 4);
++                    if (j2 - k1 > 1000L)
++                    {
++                        this.func_71216_a_("Preparing spawn area", i1 * 100 / 625);
++                        k1 = j2;
++                    }
++
++                    ++i1;
++                    worldserver.func_72863_F().func_186025_d(blockpos.func_177958_n() + l1 >> 4, blockpos.func_177952_p() + i2 >> 4);
++                }
+             }
+         }
+ 
+@@ -341,7 +399,7 @@
+ 
+     public abstract boolean func_183002_r();
+ 
+-    protected void func_71216_a_(String p_71216_1_, int p_71216_2_)
++    public void func_71216_a_(String p_71216_1_, int p_71216_2_) // CM changed visibility to public
+     {
+         this.field_71302_d = p_71216_1_;
+         this.field_71303_e = p_71216_2_;
+@@ -375,10 +433,16 @@
+                 }
+             }
+         }
++        CarpetServer.onWorldsSaved(this);
+     }
+ 
+     protected void func_71260_j()
+     {
++    	//Shetro Syncmatica shutdown
++    	Syncmatica.shutdown();
++    	//Shetro Chatbridge on minecraft server stopped
++    	//ChatbridgeBridge.onMinecraftServerStopped();
++        //Shetro end
+         field_147145_h.info("Stopping server");
+ 
+         if (this.func_147137_ag() != null)
+@@ -389,6 +453,8 @@
+         if (this.field_71318_t != null)
+         {
+             field_147145_h.info("Saving players");
++            this.field_71318_t.removeBotTeam();
++            this.field_71318_t.storeFakePlayerData();
+             this.field_71318_t.func_72389_g();
+             this.field_71318_t.func_72392_r();
+         }
+@@ -450,18 +516,33 @@
+             {
+                 this.field_175591_ab = func_130071_aq();
+                 long i = 0L;
+-                this.field_147147_p.func_151315_a(new TextComponentString(this.field_71286_C));
++                if ("_".equals(CarpetSettings.customMOTD))
++                    this.field_147147_p.func_151315_a(new TextComponentString(this.field_71286_C));
++                else
++                    this.field_147147_p.func_151315_a(new TextComponentString(CarpetSettings.customMOTD));
+                 this.field_147147_p.func_151321_a(new ServerStatusResponse.Version("1.12.2", 340));
+                 this.func_184107_a(this.field_147147_p);
+ 
+                 while (this.field_71317_u)
+                 {
++                    /* carpet mod commandTick */
++                    //todo check if this check is necessary
++                    if (TickSpeed.time_warp_start_time != 0)
++                    {
++                        if (TickSpeed.continueWarp())
++                        {
++                            this.func_71217_p();
++                            this.field_175591_ab = func_130071_aq();
++                            this.field_71296_Q = true;
++                        }
++                        continue;
++                    }
++                    /* end */
+                     long k = func_130071_aq();
+                     long j = k - this.field_175591_ab;
+ 
+                     if (j > 2000L && this.field_175591_ab - this.field_71299_R >= 15000L)
+                     {
+-                        field_147145_h.warn("Can't keep up! Did the system time change, or is the server overloaded? Running {}ms behind, skipping {} tick(s)", Long.valueOf(j), Long.valueOf(j / 50L));
+                         j = 2000L;
+                         this.field_71299_R = this.field_175591_ab;
+                     }
+@@ -474,6 +555,7 @@
+ 
+                     i += j;
+                     this.field_175591_ab = k;
++                    boolean falling_behind = false;
+ 
+                     if (this.field_71305_c[0].func_73056_e())
+                     {
+@@ -482,14 +564,33 @@
+                     }
+                     else
+                     {
+-                        while (i > 50L)
++                        boolean keeping_up = false;
++                        while (i > TickSpeed.mspt) /* carpet mod 50L */
+                         {
+-                            i -= 50L;
++                            i -= TickSpeed.mspt; /* carpet mod 50L */
++                            if (CarpetSettings.watchdogFix && keeping_up)
++                            {
++                                this.field_175591_ab = func_130071_aq();
++                                this.field_71296_Q = true;
++                                falling_behind = true;
++                            }
+                             this.func_71217_p();
++                            keeping_up = true;
++                            if (CarpetSettings.disableVanillaTickWarp) {
++                                i = func_130071_aq() - k;
++                                break;
++                            }
+                         }
+                     }
+ 
+-                    Thread.sleep(Math.max(1L, 50L - i));
++                    if (falling_behind)
++                    {
++                        Thread.sleep(1L); /* carpet mod 50L */
++                    }
++                    else
++                    {
++                        Thread.sleep(Math.max(1L, TickSpeed.mspt - i)); /* carpet mod 50L */
++                    }
+                     this.field_71296_Q = true;
+                 }
+             }
+@@ -594,6 +695,15 @@
+         long i = System.nanoTime();
+         ++this.field_71315_w;
+ 
++        CarpetServer.tick(this);
++        if (CarpetProfiler.tick_health_requested != 0L)
++        {
++            CarpetProfiler.start_tick_profiling();
++        }
++
++        CarpetServer.rsmmServer.tickStart(); // RSMM
++        WorldHelper.startTickTask(TickTask.TICK); // RSMM
++
+         if (this.field_71295_T)
+         {
+             this.field_71295_T = false;
+@@ -620,13 +730,23 @@
+             this.field_147147_p.func_151318_b().func_151330_a(agameprofile);
+         }
+ 
++        LagSpikeHelper.processLagSpikes(null, LagSpikeHelper.TickPhase.AUTOSAVE, LagSpikeHelper.PrePostSubPhase.PRE);
+         if (this.field_71315_w % 900 == 0)
+         {
++            CarpetProfiler.start_section(null, "Autosave");
+             this.field_71304_b.func_76320_a("save");
++            WorldHelper.startTickTask(TickTask.AUTOSAVE); // RSMM
++            this.field_71318_t.storeFakePlayerData();
+             this.field_71318_t.func_72389_g();
++            if(carpet.carpetclient.CarpetClientChunkLogger.logger.enabled)
++                carpet.carpetclient.CarpetClientChunkLogger.setReason("Autosave queuing chunks for unloading");
+             this.func_71267_a(true);
++            carpet.carpetclient.CarpetClientChunkLogger.resetReason();
+             this.field_71304_b.func_76319_b();
++            WorldHelper.endTickTask(); // RSMM
++            CarpetProfiler.end_current_section();
+         }
++        LagSpikeHelper.processLagSpikes(null, LagSpikeHelper.TickPhase.AUTOSAVE, LagSpikeHelper.PrePostSubPhase.POST);
+ 
+         this.field_71304_b.func_76320_a("tallying");
+         this.field_71311_j[this.field_71315_w % 100] = System.nanoTime() - i;
+@@ -645,12 +765,34 @@
+ 
+         this.field_71304_b.func_76319_b();
+         this.field_71304_b.func_76319_b();
++
++        WorldHelper.endTickTask(); // RSMM
++        CarpetServer.rsmmServer.tickEnd(); // RSMM
++
++        // ChunkLogger - 0x-CARPET
++        if(CarpetClientChunkLogger.logger.enabled) {
++            CarpetClientChunkLogger.logger.sendAll();
++        }
++
++        LagSpikeHelper.processLagSpikes(null, LagSpikeHelper.TickPhase.TICK, LagSpikeHelper.PrePostSubPhase.POST);
++
++        if (CarpetProfiler.tick_health_requested != 0L)
++        {
++            CarpetProfiler.end_tick_profiling(this);
++        }
++
++        if(CarpetSettings.scoreboardDelta > 0 && field_71315_w % 20 == 0){
++            ScoreboardDelta.update();
++        }
+     }
+ 
+     public void func_71190_q()
+     {
++        LagSpikeHelper.processLagSpikes(null, LagSpikeHelper.TickPhase.TICK, LagSpikeHelper.PrePostSubPhase.PRE);
+         this.field_71304_b.func_76320_a("jobs");
++        WorldHelper.startTickTask(TickTask.PACKETS); // RSMM
+ 
++        LagSpikeHelper.processLagSpikes(null, LagSpikeHelper.TickPhase.PLAYER, LagSpikeHelper.PrePostSubPhase.PRE);
+         synchronized (this.field_175589_i)
+         {
+             while (!this.field_175589_i.isEmpty())
+@@ -658,8 +800,10 @@
+                 Util.func_181617_a(this.field_175589_i.poll(), field_147145_h);
+             }
+         }
++        LagSpikeHelper.processLagSpikes(null, LagSpikeHelper.TickPhase.PLAYER, LagSpikeHelper.PrePostSubPhase.POST);
+ 
+         this.field_71304_b.func_76318_c("levels");
++        WorldHelper.swapTickTask(TickTask.LEVELS); // RSMM
+ 
+         for (int j = 0; j < this.field_71305_c.length; ++j)
+         {
+@@ -672,6 +816,7 @@
+                 {
+                     return worldserver.func_72912_H().func_76065_j();
+                 });
++                LagSpikeHelper.processLagSpikes(null, LagSpikeHelper.TickPhase.DIMENSION, LagSpikeHelper.PrePostSubPhase.PRE);
+ 
+                 if (this.field_71315_w % 20 == 0)
+                 {
+@@ -686,27 +831,46 @@
+                 {
+                     worldserver.func_72835_b();
+                 }
++                catch (ThrowableSuppression e)
++                {
++                    Messenger.print_server_message(this, "You just caused a server crash in world tick.");
++                }
+                 catch (Throwable throwable1)
+                 {
+                     CrashReport crashreport = CrashReport.func_85055_a(throwable1, "Exception ticking world");
+                     worldserver.func_72914_a(crashreport);
+-                    throw new ReportedException(crashreport);
++                    if(!CarpetSettings.updateSuppressionCrashFix || !(crashreport.func_71505_b() instanceof ThrowableSuppression) ) {
++                        throw new ReportedException(crashreport);
++                    } else {
++                        Messenger.print_server_message(this, "You just caused a server crash in world tick.");
++                    }
+                 }
+ 
+                 try
+                 {
++                    WorldHelper.startTickTask(TickTask.ENTITIES); // RSMM
+                     worldserver.func_72939_s();
++                    WorldHelper.endTickTask(); // RSMM
+                 }
++                catch (ThrowableSuppression e)
++                {
++                    Messenger.print_server_message(this, "You just caused a server crash in update entities.");
++                }
+                 catch (Throwable throwable)
+                 {
+                     CrashReport crashreport1 = CrashReport.func_85055_a(throwable, "Exception ticking world entities");
+                     worldserver.func_72914_a(crashreport1);
+-                    throw new ReportedException(crashreport1);
++                    if(!CarpetSettings.updateSuppressionCrashFix || !(crashreport1.func_71505_b() instanceof ThrowableSuppression) ) {
++                        throw new ReportedException(crashreport1);
++                    } else {
++                        Messenger.print_server_message(this, "You just caused a server crash in update entities.");
++                    }
+                 }
+ 
+                 this.field_71304_b.func_76319_b();
+                 this.field_71304_b.func_76320_a("tracker");
+                 worldserver.func_73039_n().func_72788_a();
++                LagSpikeHelper.processLagSpikes(null, LagSpikeHelper.TickPhase.DIMENSION, LagSpikeHelper.PrePostSubPhase.POST);
+                 this.field_71304_b.func_76319_b();
+                 this.field_71304_b.func_76319_b();
+             }
+@@ -714,13 +878,19 @@
+             this.field_71312_k[j][this.field_71315_w % 100] = System.nanoTime() - i;
+         }
+ 
++        CarpetProfiler.start_section(null, "Network");
+         this.field_71304_b.func_76318_c("connection");
++        WorldHelper.swapTickTask(TickTask.CONNECTIONS); // RSMM
+         this.func_147137_ag().func_151269_c();
+         this.field_71304_b.func_76318_c("players");
++        WorldHelper.swapTickTask(TickTask.PLAYER_PING); // RSMM
+         this.field_71318_t.func_72374_b();
++        CarpetProfiler.end_current_section();
+         this.field_71304_b.func_76318_c("commandFunctions");
++        WorldHelper.swapTickTask(TickTask.COMMAND_FUNCTIONS); // RSMM
+         this.func_193030_aL().func_73660_a();
+         this.field_71304_b.func_76318_c("tickables");
++        WorldHelper.swapTickTask(TickTask.SERVER_GUI); // RSMM
+ 
+         for (int k = 0; k < this.field_71322_p.size(); ++k)
+         {
+@@ -728,6 +898,9 @@
+         }
+ 
+         this.field_71304_b.func_76319_b();
++        WorldHelper.endTickTask(); // RSMM
++
++        PistonFixes.onEndTick();
+     }
+ 
+     public boolean func_71255_r()
+@@ -939,7 +1112,7 @@
+ 
+     public String getServerModName()
+     {
+-        return "vanilla";
++        return "voided_carpet";
+     }
+ 
+     public CrashReport func_71230_b(CrashReport p_71230_1_)
+@@ -1512,15 +1685,28 @@
+     {
+         if (this.func_152345_ab())
+         {
++            CarpetServer.rsmmServer.getMultimeter().reloadOptions(); // RSMM
+             this.func_184103_al().func_72389_g();
+             this.field_71305_c[0].func_184146_ak().func_186522_a();
+             this.func_191949_aK().func_192779_a();
+             this.func_193030_aL().func_193059_f();
+             this.func_184103_al().func_193244_w();
++
++            //Bjoel2 CustomWhitelistMessage
++            if(CarpetSettings.customWhitelistMessage)
++            {
++                CustomWhitelistMessage.g_Instance.reloadConfig();
++            }
++            //Bjoel2 end
+         }
+         else
+         {
+             this.func_152344_a(this::func_193031_aM);
+         }
+     }
++
++    // RSMM
++    public boolean isPaused() {
++        return false;
++    }
+ }
