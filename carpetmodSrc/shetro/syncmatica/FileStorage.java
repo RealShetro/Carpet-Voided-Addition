@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class FileStorage implements IFileStorage {
-
     private final HashMap<ServerPlacement, Long> buffer = new HashMap<>();
     private Context context = null;
 

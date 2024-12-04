@@ -10,7 +10,6 @@ import java.util.UUID;
 // could probably turn this into a singleton
 
 public class Syncmatica {
-
     public static final String VERSION = "0.3.8-alpha.1";
     public static final String MOD_ID = "syncmatica";
 
@@ -66,8 +65,5 @@ public class Syncmatica {
         contexts = null;
     }
 
-    protected Syncmatica() {
-
-    }
-
+    protected Syncmatica() {}
 }

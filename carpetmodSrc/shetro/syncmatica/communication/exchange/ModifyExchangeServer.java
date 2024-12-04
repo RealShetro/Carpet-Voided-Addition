@@ -11,7 +11,6 @@ import net.minecraft.network.PacketBuffer;
 import java.util.UUID;
 
 public class ModifyExchangeServer extends AbstractExchange {
-
     private final ServerPlacement placement;
     UUID placementId;
 
@@ -74,5 +73,4 @@ public class ModifyExchangeServer extends AbstractExchange {
             getContext().getCommunicationManager().setModifier(placement, null);
         }
     }
-
 }

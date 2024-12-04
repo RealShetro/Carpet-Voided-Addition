@@ -8,7 +8,6 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.network.PacketBuffer;
 
 public abstract class FeatureExchange extends AbstractExchange {
-
     protected FeatureExchange(final ExchangeTarget partner, final Context con) {
         super(partner, con);
     }

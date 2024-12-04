@@ -3,7 +3,6 @@ package shetro.syncmatica.service;
 import shetro.syncmatica.Context;
 
 abstract class AbstractService implements IService {
-
     Context context;
 
     @Override

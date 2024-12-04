@@ -3,7 +3,6 @@ package shetro.syncmatica.communication;
 import shetro.syncmatica.Context;
 import shetro.syncmatica.communication.exchange.Exchange;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.play.client.CPacketCustomPayload;
 import net.minecraft.network.play.server.SPacketCustomPayload;
 import net.minecraft.network.NetHandlerPlayServer;
 

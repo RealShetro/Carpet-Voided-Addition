@@ -10,14 +10,12 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.util.Util;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 
 public class ServerCommunicationManager extends CommunicationManager {
-
     private final Map<UUID, List<ServerPlacement>> downloadingFile = new HashMap<>();
     private final Map<ExchangeTarget, EntityPlayerMP> playerMap = new HashMap<>();
 

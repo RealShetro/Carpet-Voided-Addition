@@ -13,7 +13,6 @@ import org.apache.logging.log4j.LogManager;
 import java.util.Collection;
 
 public class VersionHandshakeServer extends FeatureExchange {
-
     private String partnerVersion;
 
     public VersionHandshakeServer(final ExchangeTarget partner, final Context con) {

@@ -8,7 +8,6 @@ import net.minecraft.network.PacketBuffer;
 import java.util.UUID;
 
 public abstract class AbstractExchange implements Exchange {
-
     private boolean success = false;
     private boolean finished = false;
     private final ExchangeTarget partner;
@@ -72,5 +71,4 @@ public abstract class AbstractExchange implements Exchange {
         sourceBuf.readerIndex(r);
         return sourceId.equals(targetId);
     }
-
 }

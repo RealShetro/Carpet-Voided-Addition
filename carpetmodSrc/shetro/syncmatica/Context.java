@@ -15,7 +15,6 @@ import java.io.*;
 import java.util.Arrays;
 
 public class Context {
-
     private final IFileStorage files;
     private final CommunicationManager comMan;
     private final SyncmaticManager synMan;

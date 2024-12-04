@@ -1,6 +1,5 @@
 package shetro.syncmatica.extended_core;
 
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import net.minecraft.util.Mirror;

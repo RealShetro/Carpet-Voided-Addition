@@ -4,7 +4,6 @@ import shetro.syncmatica.Syncmatica;
 import org.apache.logging.log4j.LogManager;
 
 public class DebugService extends AbstractService {
-
     private boolean doPacketLogging = false;
 
     public void logReceivePacket(final String packageType) {

@@ -3,7 +3,6 @@ package shetro.syncmatica.service;
 import shetro.syncmatica.Context;
 
 public interface IService {
-
     void setContext(Context context);
 
     Context getContext();

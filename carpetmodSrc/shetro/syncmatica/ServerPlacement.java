@@ -15,7 +15,6 @@ import java.io.FileInputStream;
 import java.util.UUID;
 
 public class ServerPlacement {
-
     private final UUID id;
 
     private final String fileName;

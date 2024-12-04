@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class QuotaService extends AbstractService {
-
     public static final Boolean IS_ENABLED_DEFAULT = false;
     public static final Integer QUOTA_LIMIT_DEFAULT = 40000000;
 

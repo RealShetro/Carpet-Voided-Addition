@@ -8,7 +8,6 @@ import java.util.*;
 // or has enabled/disabled
 
 public class FeatureSet {
-
     private static final Map<String, FeatureSet> versionFeatures;
     private final Collection<Feature> features;
 
@@ -60,5 +59,4 @@ public class FeatureSet {
         versionFeatures = new HashMap<>();
         versionFeatures.put("0.1", new FeatureSet(Collections.singletonList(Feature.CORE)));
     }
-
 }

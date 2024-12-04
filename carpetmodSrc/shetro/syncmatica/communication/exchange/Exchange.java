@@ -15,7 +15,6 @@ import net.minecraft.network.PacketBuffer;
 
 
 public interface Exchange {
-
     // uniquely identifies the partner of this exchange
     ExchangeTarget getPartner();
 
@@ -46,5 +45,4 @@ public interface Exchange {
 
     // initializes the actual Exchange
     void init();
-
 }

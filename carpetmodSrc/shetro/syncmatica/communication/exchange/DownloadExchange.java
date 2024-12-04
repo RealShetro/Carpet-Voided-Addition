@@ -19,7 +19,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 public class DownloadExchange extends AbstractExchange {
-
     private final ServerPlacement toDownload;
     private final OutputStream outputStream;
     private final MessageDigest md5;
@@ -126,5 +125,4 @@ public class DownloadExchange extends AbstractExchange {
     public ServerPlacement getPlacement() {
         return toDownload;
     }
-
 }

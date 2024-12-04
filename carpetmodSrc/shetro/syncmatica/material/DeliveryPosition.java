@@ -4,7 +4,6 @@ import shetro.syncmatica.ServerPosition;
 import net.minecraft.util.math.BlockPos;
 
 public class DeliveryPosition extends ServerPosition {
-
     private final int amount;
 
     public DeliveryPosition(final BlockPos pos, final String dim, final int amount) {

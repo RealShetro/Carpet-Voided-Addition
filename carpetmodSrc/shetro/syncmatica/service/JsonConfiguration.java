@@ -7,7 +7,6 @@ import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 
 public class JsonConfiguration implements IServiceConfiguration {
-
     public final JsonObject configuration;
     private Boolean wasError;
 
