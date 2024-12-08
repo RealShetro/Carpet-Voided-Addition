@@ -10,13 +10,13 @@ import redstone.multimeter.helper.WorldHelper;
 
 public interface MeterableBlock extends Meterable {
 	
-	default void logPowered(World world, BlockPos pos, boolean powered) {
+	default void rsmm$logPowered(World world, BlockPos pos, boolean powered) {
 		if (CarpetSettings.redstoneMultimeter && !world.isRemote) {
 			WorldHelper.getMultimeter().logPowered(world, pos, powered);
 		}
 	}
 	
-	default void logPowered(World world, BlockPos pos, IBlockState state) {
+	default void rsmm$logPowered(World world, BlockPos pos, IBlockState state) {
 		if (CarpetSettings.redstoneMultimeter && !world.isRemote) {
 			WorldHelper.getMultimeter().logPowered(world, pos, state);
 		}

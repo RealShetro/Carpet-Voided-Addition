@@ -24,7 +24,7 @@
      public void func_145995_a(int p_145995_1_)
      {
 +        // RSMM start
-+        if (CarpetSettings.redstoneMultimeter && !field_145850_b.field_72995_K) {
++        if (CarpetSettings.redstoneMultimeter) {
 +            WorldHelper.getMultimeter().logPowerChange(field_145850_b, field_174879_c, field_145997_a, p_145995_1_);
 +        }
 +        // RSMM end

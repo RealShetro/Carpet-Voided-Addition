@@ -21,7 +21,7 @@
          boolean flag = p_189540_2_.func_175640_z(p_189540_3_);
          TileEntity tileentity = p_189540_2_.func_175625_s(p_189540_3_);
  
-+        logPowered(p_189540_2_, p_189540_3_, flag); // RSMM
++        rsmm$logPowered(p_189540_2_, p_189540_3_, flag); // RSMM
 +
          if (tileentity instanceof TileEntityNote)
          {
@@ -37,7 +37,7 @@
                  tileentitynote.field_145880_i = flag;
 +  
 +                // RSMM start
-+                if (!p_189540_2_.field_72995_K) {
++                if (CarpetSettings.redstoneMultimeter) {
 +                    WorldHelper.getMultimeter().logActive(p_189540_2_, p_189540_3_, flag);
 +                }
 +                // RSMM end
@@ -123,13 +123,13 @@
 +
 +    // RSMM
 +    @Override
-+    public boolean logPoweredOnBlockUpdate() {
++    public boolean rsmm$logPoweredOnBlockUpdate() {
 +        return false;
 +    }
 +
 +    // RSMM
 +    @Override
-+    public boolean isActive(World world, BlockPos pos, IBlockState state) {
++    public boolean rsmm$isActive(World world, BlockPos pos, IBlockState state) {
 +        TileEntity blockEntity = world.func_175625_s(pos);
 +
 +        if (blockEntity instanceof TileEntityNote) {

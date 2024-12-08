@@ -26,7 +26,7 @@
 +import net.minecraft.world.gen.structure.template.Template;
 +import net.minecraft.server.management.PlayerInteractionManager;
 +
-+import redstone.multimeter.common.network.PacketManager;
++import redstone.multimeter.common.network.Packets;
 +
 +import static carpet.commands.CommandGMS.setPlayerToSurvival;
 +
@@ -305,9 +305,9 @@
 +            PlayerInteractionManager.activateInstantMine = true;
 +        }
 +        // RSMM packet handling
-+        else if (PacketManager.getPacketChannelId().equals(s))
++        else if (Packets.getChannel().equals(s))
          {
-+            CarpetServer.rsmmServer.getPacketHandler().onPacketReceived(p_147349_1_.func_180760_b(), field_147369_b);
++            CarpetServer.rsmmServer.getPacketHandler().handlePacket(p_147349_1_.func_180760_b(), field_147369_b);
 +        }
 +        else if ("MC|BEdit".equals(s))
 +        {

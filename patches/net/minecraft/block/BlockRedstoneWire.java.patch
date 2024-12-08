@@ -162,7 +162,7 @@
 -        {
 -            j = k;
 -        }
-+        logPowered(p_176345_1_, p_176345_2_, j > MIN_POWER); // RSMM
++        rsmm$logPowered(p_176345_1_, p_176345_2_, j > MIN_POWER); // RSMM
  
          if (i != j)
          {
@@ -264,7 +264,7 @@
  
 +    // RSMM
 +    @Override
-+    public boolean logPoweredOnBlockUpdate() {
++    public boolean rsmm$logPoweredOnBlockUpdate() {
 +        return false;
 +    }
 +
@@ -273,19 +273,19 @@
 +    // returns 'true', so it does not really matter that a potentially
 +    // incorrect value is returned.
 +    @Override
-+    public boolean isPowered(World world, BlockPos pos, IBlockState state) {
++    public boolean rsmm$isPowered(World world, BlockPos pos, IBlockState state) {
 +        return state.func_177229_b(field_176351_O) > MIN_POWER;
 +    }
 +
 +    // RSMM
 +    @Override
-+    public boolean isActive(World world, BlockPos pos, IBlockState state) {
++    public boolean rsmm$isActive(World world, BlockPos pos, IBlockState state) {
 +        return state.func_177229_b(field_176351_O) > MIN_POWER;
 +    }
 +
 +    // RSMM
 +    @Override
-+    public int getPowerLevel(World world, BlockPos pos, IBlockState state) {
++    public int rsmm$getPowerLevel(World world, BlockPos pos, IBlockState state) {
 +        return state.func_177229_b(field_176351_O);
 +    }
 +

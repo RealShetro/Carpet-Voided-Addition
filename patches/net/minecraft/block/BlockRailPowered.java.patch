@@ -171,7 +171,7 @@
 +                || this.func_176566_a(p_189541_2_, p_189541_3_, p_189541_1_, true, 0)
 +                || this.func_176566_a(p_189541_2_, p_189541_3_, p_189541_1_, false, 0);
  
-+        logPowered(p_189541_2_, p_189541_3_, flag1); // RSMM
++        rsmm$logPowered(p_189541_2_, p_189541_3_, flag1); // RSMM
 +
          if (flag1 != flag)
          {
@@ -198,19 +198,19 @@
 +
 +    // RSMM
 +    @Override
-+    public boolean logPoweredOnBlockUpdate() {
++    public boolean rsmm$logPoweredOnBlockUpdate() {
 +        return false;
 +    }
 +
 +    // RSMM
 +    @Override
-+    public boolean isPowered(World world, BlockPos pos, IBlockState state) {
++    public boolean rsmm$isPowered(World world, BlockPos pos, IBlockState state) {
 +        return world.func_175640_z(pos) || func_176566_a(world, pos, state, true, 0) || func_176566_a(world, pos, state, false, 0);
 +    }
 +
 +    // RSMM
 +    @Override
-+    public boolean isActive(World world, BlockPos pos, IBlockState state) {
++    public boolean rsmm$isActive(World world, BlockPos pos, IBlockState state) {
 +        return state.func_177229_b(field_176569_M);
 +    }
  }

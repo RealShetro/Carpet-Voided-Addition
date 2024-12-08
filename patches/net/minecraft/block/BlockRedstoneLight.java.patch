@@ -15,7 +15,7 @@
      {
          if (!p_180650_1_.field_72995_K)
          {
-+            logPowered(p_180650_1_, p_180650_2_, p_180650_3_); // RSMM
++            rsmm$logPowered(p_180650_1_, p_180650_2_, p_180650_3_); // RSMM
 +
              if (this.field_150171_a && !p_180650_1_.func_175640_z(p_180650_2_))
              {
@@ -27,7 +27,7 @@
 +
 +    // RSMM
 +    @Override
-+    public boolean isActive(World world, BlockPos pos, IBlockState state) {
++    public boolean rsmm$isActive(World world, BlockPos pos, IBlockState state) {
 +        return field_150171_a;
 +    }
  }

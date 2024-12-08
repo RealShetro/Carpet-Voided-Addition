@@ -1,60 +1,28 @@
 package redstone.multimeter.server;
 
-import java.util.Collection;
-
-import carpet.CarpetSettings;
-
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.SPacketCustomPayload;
 
-import redstone.multimeter.common.network.AbstractPacketHandler;
-import redstone.multimeter.common.network.RSMMPacket;
-import redstone.multimeter.server.meter.ServerMeterGroup;
+import redstone.multimeter.common.network.PacketHandler;
 
-public class ServerPacketHandler extends AbstractPacketHandler {
-	
+public class ServerPacketHandler extends PacketHandler {
+
 	private final MultimeterServer server;
-	
+
 	public ServerPacketHandler(MultimeterServer server) {
 		this.server = server;
 	}
 
 	@Override
-	protected Packet<?> toCustomPayload(String id, PacketBuffer buffer) {
-		return new SPacketCustomPayload(id, buffer);
+	protected Packet<?> toCustomPayload(String channel, PacketBuffer data) {
+		return new SPacketCustomPayload(channel, data);
 	}
-	
-	@Override
-	public <P extends RSMMPacket> void send(P packet) {
-		Packet<?> mcPacket = encode(packet);
-		server.getPlayerManager().sendPacketToAllPlayers(mcPacket);
-	}
-	
-	public <P extends RSMMPacket> void sendToPlayer(P packet, EntityPlayerMP player) {
-		player.connection.sendPacket(encode(packet));
-	}
-	
-	public <P extends RSMMPacket> void sendToPlayers(P packet, Collection<EntityPlayerMP> players) {
-		Packet<?> mcPacket = encode(packet);
-		
-		for (EntityPlayerMP player : players) {
-			player.connection.sendPacket(mcPacket);
-		}
-	}
-	
-	public <P extends RSMMPacket> void sendToSubscribers(P packet, ServerMeterGroup meterGroup) {
-		sendToPlayers(packet, server.collectPlayers(meterGroup.getSubscribers()));
-	}
-	
-	public void onPacketReceived(PacketBuffer buffer, EntityPlayerMP player) {
+
+	public void handlePacket(PacketBuffer data, EntityPlayerMP player) {
 		try {
-			RSMMPacket packet = decode(buffer);
-			
-			if (CarpetSettings.redstoneMultimeter || packet.force()) {
-				packet.execute(server, player);
-			}
+			decode(data).handle(server, player);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

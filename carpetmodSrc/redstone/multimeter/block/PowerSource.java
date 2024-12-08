@@ -11,14 +11,14 @@ public interface PowerSource extends IBlock {
 	public static final int MAX_POWER = 15;
 	
 	@Override
-	default boolean isPowerSource() {
+	default boolean rsmm$isPowerSource() {
 		return true;
 	}
 	
-	default boolean logPowerChangeOnStateChange() {
+	default boolean rsmm$logPowerChangeOnStateChange() {
 		return true;
 	}
 	
-	public int getPowerLevel(World world, BlockPos pos, IBlockState state);
+	public int rsmm$getPowerLevel(World world, BlockPos pos, IBlockState state);
 	
 }

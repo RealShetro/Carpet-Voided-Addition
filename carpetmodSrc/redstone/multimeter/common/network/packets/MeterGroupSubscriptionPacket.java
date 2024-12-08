@@ -9,37 +9,37 @@ import redstone.multimeter.server.MultimeterServer;
 import redstone.multimeter.server.meter.ServerMeterGroup;
 
 public class MeterGroupSubscriptionPacket implements RSMMPacket {
-	
+
 	private String name;
-	private boolean subscribed;
-	
+	private boolean subscribe;
+
 	public MeterGroupSubscriptionPacket() {
-		
+
 	}
-	
+
 	public MeterGroupSubscriptionPacket(String name, boolean subscribed) {
 		this.name = name;
-		this.subscribed = subscribed;
+		this.subscribe = subscribed;
 	}
-	
+
 	@Override
 	public void encode(NBTTagCompound data) {
 		data.setString("name", name);
-		data.setBoolean("subscribed", subscribed);
+		data.setBoolean("subscribe", subscribe);
 	}
-	
+
 	@Override
 	public void decode(NBTTagCompound data) {
 		name = data.getString("name");
-		subscribed = data.getBoolean("subscribed");
+		subscribe = data.getBoolean("subscribe");
 	}
-	
+
 	@Override
-	public void execute(MultimeterServer server, EntityPlayerMP player) {
+	public void handle(MultimeterServer server, EntityPlayerMP player) {
 		Multimeter multimeter = server.getMultimeter();
 		ServerMeterGroup meterGroup = multimeter.getMeterGroup(name);
-		
-		if (subscribed) {
+
+		if (subscribe) {
 			if (meterGroup == null) {
 				multimeter.createMeterGroup(player, name);
 			} else {

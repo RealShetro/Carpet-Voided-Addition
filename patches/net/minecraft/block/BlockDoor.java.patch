@@ -24,8 +24,8 @@
              {
                  boolean flag = p_189540_2_.func_175640_z(p_189540_3_) || p_189540_2_.func_175640_z(blockpos1);
  
-+                logPowered(p_189540_2_, p_189540_3_, flag); // RSMM
-+                logPowered(p_189540_2_, blockpos1, flag); // RSMM
++                rsmm$logPowered(p_189540_2_, p_189540_3_, flag); // RSMM
++                rsmm$logPowered(p_189540_2_, blockpos1, flag); // RSMM
 +
                  if (p_189540_4_ != this && (flag || p_189540_4_.func_176223_P().func_185897_m()) && flag != ((Boolean)iblockstate1.func_177229_b(field_176522_N)).booleanValue())
                  {
@@ -36,19 +36,19 @@
  
 +    // RSMM
 +    @Override
-+    public boolean logPoweredOnBlockUpdate() {
++    public boolean rsmm$logPoweredOnBlockUpdate() {
 +        return false;
 +    }
 +
 +    // RSMM
 +    @Override
-+    public boolean isPowered(World world, BlockPos pos, IBlockState state) {
++    public boolean rsmm$isPowered(World world, BlockPos pos, IBlockState state) {
 +        return world.func_175640_z(pos) || world.func_175640_z(getOtherHalf(pos, state));
 +    }
 +
 +    // RSMM
 +    @Override
-+    public boolean isActive(World world, BlockPos pos, IBlockState state) {
++    public boolean rsmm$isActive(World world, BlockPos pos, IBlockState state) {
 +        return state.func_177229_b(field_176519_b);
 +    }
 +

@@ -33,14 +33,13 @@
  import net.minecraft.village.VillageCollection;
  import net.minecraft.village.VillageSiege;
  import net.minecraft.world.biome.Biome;
-@@ -77,17 +81,29 @@
+@@ -77,17 +81,28 @@
  import net.minecraft.world.storage.WorldInfo;
  import net.minecraft.world.storage.WorldSavedDataCallableSave;
  import net.minecraft.world.storage.loot.LootTableManager;
 +
 +import redstone.multimeter.common.TickTask;
 +import redstone.multimeter.helper.WorldHelper;
-+import redstone.multimeter.util.DimensionUtils;
 +
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;
@@ -66,7 +65,7 @@
      private final Map<UUID, Entity> field_175741_N = Maps.<UUID, Entity>newHashMap();
      public boolean field_73058_d;
      private boolean field_73068_P;
-@@ -99,6 +115,14 @@
+@@ -99,6 +114,14 @@
      private int field_147489_T;
      private final List<NextTickListEntry> field_94579_S = Lists.<NextTickListEntry>newArrayList();
  
@@ -81,15 +80,15 @@
      public WorldServer(MinecraftServer p_i45921_1_, ISaveHandler p_i45921_2_, WorldInfo p_i45921_3_, int p_i45921_4_, Profiler p_i45921_5_)
      {
          super(p_i45921_2_, p_i45921_3_, DimensionType.func_186069_a(p_i45921_4_).func_186070_d(), p_i45921_5_, false);
-@@ -111,6 +135,7 @@
+@@ -111,6 +134,7 @@
          this.func_72966_v();
          this.func_72947_a();
          this.func_175723_af().func_177725_a(p_i45921_1_.func_175580_aG());
-+        this.dimensionName = DimensionUtils.getId(this.field_73011_w.func_186058_p()).toString();
++        this.dimensionName = this.field_73011_w.func_186058_p().func_186065_b();
      }
  
      public World func_175643_b()
-@@ -159,11 +184,30 @@
+@@ -159,11 +183,30 @@
              this.func_175723_af().func_177750_a(this.field_72986_A.func_176137_E());
          }
  
@@ -115,12 +114,12 @@
 +            CarpetServer.limitITTCounter = 0;
 +        }
 +
-+        WorldHelper.startTickTask(TickTask.TICK_WORLD, dimensionName); // RSMM
++        WorldHelper.startTickTask(TickTask.TICK_LEVEL, dimensionName); // RSMM
 +
          super.func_72835_b();
  
          if (this.func_72912_H().func_76093_s() && this.func_175659_aa() != EnumDifficulty.HARD)
-@@ -184,15 +228,30 @@
+@@ -184,15 +227,30 @@
              this.func_73053_d();
          }
  
@@ -151,7 +150,7 @@
          int j = this.func_72967_a(1.0F);
  
          if (j != this.func_175657_ab())
-@@ -200,26 +259,112 @@
+@@ -200,26 +258,112 @@
              this.func_175692_b(j);
          }
  
@@ -169,7 +168,7 @@
  
 +        // RSMM start
 +        if (tickTime) {
-+            WorldHelper.getMultimeterServer().onOverworldTickTime();
++            WorldHelper.getMultimeterServer().tickTime(this);
 +            WorldHelper.endTickTask();
 +        }
 +        // RSMM
@@ -269,7 +268,7 @@
      }
  
      @Nullable
-@@ -231,6 +376,8 @@
+@@ -231,6 +375,8 @@
  
      public boolean func_175732_a(EnumCreatureType p_175732_1_, Biome.SpawnListEntry p_175732_2_, BlockPos p_175732_3_)
      {
@@ -278,7 +277,7 @@
          List<Biome.SpawnListEntry> list = this.func_72863_F().func_177458_a(p_175732_1_, p_175732_3_);
          return list != null && !list.isEmpty() ? list.contains(p_175732_2_) : false;
      }
-@@ -255,13 +402,22 @@
+@@ -255,13 +401,22 @@
                      ++j;
                  }
              }
@@ -303,7 +302,7 @@
          this.field_73068_P = false;
  
          for (EntityPlayer entityplayer : this.field_73010_i.stream().filter(EntityPlayer::func_70608_bn).collect(Collectors.toList()))
-@@ -273,6 +429,8 @@
+@@ -273,6 +428,8 @@
          {
              this.func_73051_P();
          }
@@ -312,7 +311,7 @@
      }
  
      private void func_73051_P()
-@@ -287,6 +445,28 @@
+@@ -287,6 +444,28 @@
      {
          if (this.field_73068_P && !this.field_72995_K)
          {
@@ -341,7 +340,7 @@
              for (EntityPlayer entityplayer : this.field_73010_i)
              {
                  if (!entityplayer.func_175149_v() && !entityplayer.func_71026_bH())
-@@ -303,7 +483,7 @@
+@@ -303,7 +482,7 @@
          }
      }
  
@@ -350,54 +349,71 @@
      {
          return this.func_72863_F().func_73149_a(p_175680_1_, p_175680_2_);
      }
-@@ -344,6 +524,7 @@
+@@ -331,12 +510,14 @@
+ 
+         if (this.field_72986_A.func_76067_t() == WorldType.field_180272_g)
+         {
++        	WorldHelper.startTickTask(TickTask.TICK_CHUNKS); // RSMM
+             Iterator<Chunk> iterator1 = this.field_73063_M.func_187300_b();
+ 
+             while (iterator1.hasNext())
+             {
+                 ((Chunk)iterator1.next()).func_150804_b(false);
+             }
++            WorldHelper.endTickTask(); // RSMM
+         }
+         else
+         {
+@@ -344,7 +525,9 @@
              boolean flag = this.func_72896_J();
              boolean flag1 = this.func_72911_I();
              this.field_72984_F.func_76320_a("pollingChunks");
 +            boolean overworldIceOnly = !CarpetSettings.enableStableLCGNetherEnd || field_73011_w.func_186058_p().func_186068_a() == 0; // Rule to disable nether and end ice snow and lightning Carpet-XCOM
  
++            WorldHelper.startTickTask(TickTask.TICK_CHUNKS); // RSMM
              for (Iterator<Chunk> iterator = this.field_73063_M.func_187300_b(); iterator.hasNext(); this.field_72984_F.func_76319_b())
              {
-@@ -354,10 +535,18 @@
+                 this.field_72984_F.func_76320_a("getChunk");
+@@ -354,10 +537,18 @@
                  this.field_72984_F.func_76318_c("checkNextLight");
                  chunk.func_76594_o();
                  this.field_72984_F.func_76318_c("tickChunk");
-+                WorldHelper.startTickTask(false, TickTask.TICK_CHUNK); // RSMM
++                WorldHelper.startTickTask(TickTask.TICK_CHUNK); // RSMM
                  chunk.func_150804_b(false);
 +                if (!TickSpeed.process_entities)
 +                { // skipping the rest of the block processing
 +                    this.field_72984_F.func_76319_b();
-+                    WorldHelper.endTickTask(false); // RSMM
++                    WorldHelper.endTickTask(); // RSMM
 +                    continue;
 +                }
                  this.field_72984_F.func_76318_c("thunder");
-+                WorldHelper.swapTickTask(false, TickTask.THUNDER); // RSMM
++                WorldHelper.swapTickTask(TickTask.THUNDER); // RSMM
  
 -                if (flag && flag1 && this.field_73012_v.nextInt(100000) == 0)
 +                if (overworldIceOnly && flag && flag1 && this.field_73012_v.nextInt(100000) == 0)
                  {
                      this.field_73005_l = this.field_73005_l * 3 + 1013904223;
                      int l = this.field_73005_l >> 2;
-@@ -384,8 +573,9 @@
+@@ -384,8 +575,9 @@
                  }
  
                  this.field_72984_F.func_76318_c("iceandsnow");
-+                WorldHelper.swapTickTask(false, TickTask.PRECIPITATION); // RSMM
++                WorldHelper.swapTickTask(TickTask.PRECIPITATION); // RSMM
  
 -                if (this.field_73012_v.nextInt(16) == 0)
 +                if (overworldIceOnly && this.field_73012_v.nextInt(16) == 0)
                  {
                      this.field_73005_l = this.field_73005_l * 3 + 1013904223;
                      int j2 = this.field_73005_l >> 2;
-@@ -409,6 +599,7 @@
+@@ -409,6 +601,7 @@
                  }
  
                  this.field_72984_F.func_76318_c("tickBlocks");
-+                WorldHelper.swapTickTask(false, TickTask.RANDOM_TICKS); // RSMM
++                WorldHelper.swapTickTask(TickTask.RANDOM_TICKS); // RSMM
  
                  if (i > 0)
                  {
-@@ -429,7 +620,15 @@
+@@ -429,7 +622,15 @@
  
                                  if (block.func_149653_t())
                                  {
@@ -414,15 +430,16 @@
                                  }
  
                                  this.field_72984_F.func_76319_b();
-@@ -437,13 +636,15 @@
+@@ -437,13 +638,16 @@
                          }
                      }
                  }
 +
-+                WorldHelper.endTickTask(false); // RSMM
++                WorldHelper.endTickTask(); // RSMM
              }
  
              this.field_72984_F.func_76319_b();
++            WorldHelper.endTickTask(); // RSMM
          }
      }
  
@@ -431,7 +448,7 @@
      {
          BlockPos blockpos = this.func_175725_q(p_175736_1_);
          AxisAlignedBB axisalignedbb = (new AxisAlignedBB(blockpos, new BlockPos(blockpos.func_177958_n(), this.func_72800_K(), blockpos.func_177952_p()))).func_186662_g(3.0D);
-@@ -472,13 +673,25 @@
+@@ -472,13 +676,25 @@
  
      public boolean func_175691_a(BlockPos p_175691_1_, Block p_175691_2_)
      {
@@ -459,7 +476,7 @@
          return this.field_73064_N.contains(nextticklistentry);
      }
  
-@@ -490,7 +703,6 @@
+@@ -490,7 +706,6 @@
      public void func_175654_a(BlockPos p_175654_1_, Block p_175654_2_, int p_175654_3_, int p_175654_4_)
      {
          Material material = p_175654_2_.func_176223_P().func_185904_a();
@@ -467,7 +484,7 @@
          if (this.field_72999_e && material != Material.field_151579_a)
          {
              if (p_175654_2_.func_149698_L())
-@@ -498,20 +710,60 @@
+@@ -498,20 +713,61 @@
                  if (this.func_175707_a(p_175654_1_.func_177982_a(-8, -8, -8), p_175654_1_.func_177982_a(8, 8, 8)))
                  {
                      IBlockState iblockstate = this.func_180495_p(p_175654_1_);
@@ -507,6 +524,7 @@
 +                                {
 +                                    this.field_73064_N.add(nextticklistentry);
 +                                    this.field_73065_O.add(nextticklistentry);
++                                    WorldHelper.onScheduledTick(this, p_175654_1_, p_175654_4_, true); // RSMM
 +                                }
 +                            }
 +                        }
@@ -532,7 +550,7 @@
  
          if (this.func_175667_e(p_175654_1_))
          {
-@@ -531,7 +783,13 @@
+@@ -531,7 +787,13 @@
  
      public void func_180497_b(BlockPos p_180497_1_, Block p_180497_2_, int p_180497_3_, int p_180497_4_)
      {
@@ -547,7 +565,13 @@
          nextticklistentry.func_82753_a(p_180497_4_);
          Material material = p_180497_2_.func_176223_P().func_185904_a();
  
-@@ -549,7 +807,8 @@
+@@ -544,12 +806,14 @@
+         {
+             this.field_73064_N.add(nextticklistentry);
+             this.field_73065_O.add(nextticklistentry);
++            WorldHelper.onScheduledTick(this, p_180497_1_, p_180497_4_, true); // RSMM
+         }
+     }
  
      public void func_72939_s()
      {
@@ -557,7 +581,7 @@
          {
              if (this.field_80004_Q++ >= 300)
              {
-@@ -567,6 +826,8 @@
+@@ -567,6 +831,8 @@
  
      protected void func_184147_l()
      {
@@ -566,7 +590,7 @@
          super.func_184147_l();
          this.field_72984_F.func_76318_c("players");
  
-@@ -621,6 +882,8 @@
+@@ -621,6 +887,8 @@
  
              this.field_72984_F.func_76319_b();
          }
@@ -575,7 +599,7 @@
      }
  
      public void func_82742_i()
-@@ -644,9 +907,18 @@
+@@ -644,9 +912,18 @@
              }
              else
              {
@@ -596,7 +620,7 @@
                  }
  
                  this.field_72984_F.func_76320_a("cleaning");
-@@ -677,12 +949,15 @@
+@@ -677,12 +954,15 @@
  
                      if (this.func_175707_a(nextticklistentry1.field_180282_a.func_177982_a(0, 0, 0), nextticklistentry1.field_180282_a.func_177982_a(0, 0, 0)))
                      {
@@ -608,11 +632,11 @@
                          {
                              try
                              {
-+                                WorldHelper.onScheduledTick(this, nextticklistentry1); // RSMM
++                                WorldHelper.onScheduledTick(this, nextticklistentry1.field_180282_a, nextticklistentry1.field_82754_f, false); // RSMM
                                  iblockstate.func_177230_c().func_180650_b(this, nextticklistentry1.field_180282_a, iblockstate, this.field_73012_v);
                              }
                              catch (Throwable throwable)
-@@ -699,6 +974,7 @@
+@@ -699,6 +979,7 @@
                          this.func_175684_a(nextticklistentry1.field_180282_a, nextticklistentry1.func_151351_a(), 0);
                      }
                  }
@@ -620,7 +644,7 @@
  
                  this.field_72984_F.func_76319_b();
                  this.field_94579_S.clear();
-@@ -950,11 +1226,18 @@
+@@ -950,11 +1231,18 @@
  
              chunkproviderserver.func_186027_a(p_73044_1_);
  
@@ -640,7 +664,7 @@
                  }
              }
          }
-@@ -1033,9 +1316,15 @@
+@@ -1033,9 +1321,15 @@
                  }
                  else
                  {
@@ -656,7 +680,7 @@
                          return false;
                      }
  
-@@ -1055,6 +1344,7 @@
+@@ -1055,6 +1349,7 @@
          this.field_175729_l.func_76038_a(p_72923_1_.func_145782_y(), p_72923_1_);
          this.field_175741_N.put(p_72923_1_.func_110124_au(), p_72923_1_);
          Entity[] aentity = p_72923_1_.func_70021_al();
@@ -664,11 +688,12 @@
  
          if (aentity != null)
          {
-@@ -1139,10 +1429,15 @@
+@@ -1139,10 +1434,16 @@
          }
  
          this.field_147490_S[this.field_147489_T].add(blockeventdata);
 +        if(CarpetSettings.blockEventSerializer) blockEventSerializer.func_76185_a();
++        WorldHelper.onBlockEvent(this, p_175641_1_, p_175641_3_, true); // RSMM
      }
  
      private void func_147488_Z()
@@ -680,7 +705,7 @@
          while (!this.field_147490_S[this.field_147489_T].isEmpty())
          {
              int i = this.field_147489_T;
-@@ -1150,19 +1445,41 @@
+@@ -1150,19 +1451,41 @@
  
              for (BlockEventData blockeventdata : this.field_147490_S[i])
              {
@@ -704,7 +729,7 @@
  
              this.field_147490_S[i].clear();
 +
-+            WorldHelper.currentBlockEventDepth++;
++            WorldHelper.currentBlockEventDepth++; // RSMM
          }
 +        // [CM] Piston ghost blocks fix
 +        this.blockActionsProcessed = true;
@@ -717,13 +742,13 @@
          IBlockState iblockstate = this.func_180495_p(p_147485_1_.func_180328_a());
 +        // RSMM start
 +        if (iblockstate.func_177230_c() == p_147485_1_.func_151337_f()) {
-+            WorldHelper.onBlockEvent(this, p_147485_1_);
++            WorldHelper.onBlockEvent(this, p_147485_1_.func_180328_a(), p_147485_1_.func_151339_d(), false);
 +        }
 +        // RSMM end
          return iblockstate.func_177230_c() == p_147485_1_.func_151337_f() ? iblockstate.func_189547_a(this, p_147485_1_.func_180328_a(), p_147485_1_.func_151339_d(), p_147485_1_.func_151338_e()) : false;
      }
  
-@@ -1173,6 +1490,8 @@
+@@ -1173,6 +1496,8 @@
  
      protected void func_72979_l()
      {
@@ -732,7 +757,7 @@
          boolean flag = this.func_72896_J();
          super.func_72979_l();
  
-@@ -1200,6 +1519,8 @@
+@@ -1200,6 +1525,8 @@
              this.field_73061_a.func_184103_al().func_148540_a(new SPacketChangeGameState(7, this.field_73004_o));
              this.field_73061_a.func_184103_al().func_148540_a(new SPacketChangeGameState(8, this.field_73017_q));
          }
@@ -741,7 +766,7 @@
      }
  
      @Nullable
-@@ -1299,4 +1620,19 @@
+@@ -1299,4 +1626,19 @@
              {
              }
          }

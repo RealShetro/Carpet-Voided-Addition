@@ -7,23 +7,23 @@ import redstone.multimeter.common.network.RSMMPacket;
 import redstone.multimeter.server.MultimeterServer;
 
 public class ClearMeterGroupPacket implements RSMMPacket {
-	
+
 	public ClearMeterGroupPacket() {
-		
+
 	}
-	
+
 	@Override
 	public void encode(NBTTagCompound data) {
-		
+
 	}
-	
+
 	@Override
 	public void decode(NBTTagCompound data) {
-		
+
 	}
-	
+
 	@Override
-	public void execute(MultimeterServer server, EntityPlayerMP player) {
-		
+	public void handle(MultimeterServer server, EntityPlayerMP player) {
+
 	}
 }

@@ -28,7 +28,7 @@
          {
              boolean flag = p_189540_2_.func_175640_z(p_189540_3_);
  
-+            logPowered(p_189540_2_, p_189540_3_, flag); // RSMM
++            rsmm$logPowered(p_189540_2_, p_189540_3_, flag); // RSMM
 +
              if (((Boolean)p_189540_1_.func_177229_b(field_176465_b)).booleanValue() != flag)
              {
@@ -40,13 +40,13 @@
 +
 +    // RSMM
 +    @Override
-+    public boolean logPoweredOnBlockUpdate() {
++    public boolean rsmm$logPoweredOnBlockUpdate() {
 +        return false;
 +    }
 +
 +    // RSMM
 +    @Override
-+    public boolean isActive(World world, BlockPos pos, IBlockState state) {
++    public boolean rsmm$isActive(World world, BlockPos pos, IBlockState state) {
 +        return state.func_177229_b(field_176466_a);
 +    }
  }

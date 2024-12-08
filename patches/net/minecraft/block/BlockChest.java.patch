@@ -109,31 +109,31 @@
  
 +    // RSMM
 +    @Override
-+    public boolean isMeterable() {
++    public boolean rsmm$isMeterable() {
 +        return BlockChestHelper.isTrapped(this);
 +    }
 +
 +    // RSMM
 +    @Override
-+    public boolean isPowerSource() {
++    public boolean rsmm$isPowerSource() {
 +        return BlockChestHelper.isTrapped(this);
 +    }
 +
 +    // RSMM
 +    @Override
-+    public boolean isActive(World world, BlockPos pos, IBlockState state) {
++    public boolean rsmm$isActive(World world, BlockPos pos, IBlockState state) {
 +        return BlockChestHelper.isTrapped(this) && BlockChestHelper.getPower(world, pos, state) > MIN_POWER;
 +    }
 +
 +    // RSMM
 +    @Override
-+    public boolean logPowerChangeOnStateChange() {
++    public boolean rsmm$logPowerChangeOnStateChange() {
 +        return false;
 +    }
 +
 +    // RSMM
 +    @Override
-+    public int getPowerLevel(World world, BlockPos pos, IBlockState state) {
++    public int rsmm$getPowerLevel(World world, BlockPos pos, IBlockState state) {
 +        return BlockChestHelper.isTrapped(this) ? BlockChestHelper.getPower(world, pos, state) : MIN_POWER;
 +    }
 +

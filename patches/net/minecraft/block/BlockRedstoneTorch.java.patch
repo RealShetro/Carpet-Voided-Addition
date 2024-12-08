@@ -24,7 +24,7 @@
          EnumFacing enumfacing = ((EnumFacing)p_176597_3_.func_177229_b(field_176596_a)).func_176734_d();
 -        return p_176597_1_.func_175709_b(p_176597_2_.func_177972_a(enumfacing), enumfacing);
 +        boolean powered = p_176597_1_.func_175709_b(p_176597_2_.func_177972_a(enumfacing), enumfacing);
-+        logPowered(p_176597_1_, p_176597_2_, powered); // RSMM
++        rsmm$logPowered(p_176597_1_, p_176597_2_, powered); // RSMM
 +        return powered;
      }
  
@@ -44,25 +44,25 @@
  
 +    // RSMM
 +    @Override
-+    public boolean logPoweredOnBlockUpdate() {
++    public boolean rsmm$logPoweredOnBlockUpdate() {
 +        return false;
 +    }
 +
 +    // RSMM
 +    @Override
-+    public boolean isPowered(World world, BlockPos pos, IBlockState state) {
++    public boolean rsmm$isPowered(World world, BlockPos pos, IBlockState state) {
 +        return func_176597_g(world, pos, state);
 +    }
 +
 +    // RSMM
 +    @Override
-+    public boolean isActive(World world, BlockPos pos, IBlockState state) {
++    public boolean rsmm$isActive(World world, BlockPos pos, IBlockState state) {
 +        return field_150113_a;
 +    }
 +
 +    // RSMM
 +    @Override
-+    public int getPowerLevel(World world, BlockPos pos, IBlockState state) {
++    public int rsmm$getPowerLevel(World world, BlockPos pos, IBlockState state) {
 +        return field_150113_a ? MAX_POWER : MIN_POWER;
 +    }
 +

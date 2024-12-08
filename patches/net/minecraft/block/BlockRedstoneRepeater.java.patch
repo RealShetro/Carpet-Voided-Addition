@@ -45,7 +45,7 @@
 +        boolean locked = this.func_176407_c(p_176405_1_, p_176405_2_, p_176405_3_) > 0;
 +        // RSMM start
 +        if (locked && p_176405_1_ instanceof WorldServer) {
-+            logPowered((WorldServer)p_176405_1_, p_176405_2_, p_176405_3_);
++            rsmm$logPowered((WorldServer)p_176405_1_, p_176405_2_, p_176405_3_);
 +        }
 +        // RSMM end
 +        return locked;
@@ -59,7 +59,7 @@
 +
 +    // RSMM
 +    @Override
-+    public int getPowerLevel(World world, BlockPos pos, IBlockState state) {
++    public int rsmm$getPowerLevel(World world, BlockPos pos, IBlockState state) {
 +        return field_149914_a ? MAX_POWER : MIN_POWER;
 +    }
  }

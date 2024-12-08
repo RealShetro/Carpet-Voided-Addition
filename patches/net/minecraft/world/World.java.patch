@@ -596,9 +596,11 @@
          int i = MathHelper.func_76128_c(p_191504_2_.field_72340_a) - 1;
          int j = MathHelper.func_76143_f(p_191504_2_.field_72336_d) + 1;
          int k = MathHelper.func_76128_c(p_191504_2_.field_72338_b) - 1;
-@@ -1338,7 +1478,9 @@
+@@ -1337,8 +1477,11 @@
+     public void func_72939_s()
      {
          this.field_72984_F.func_76320_a("entities");
++        WorldHelper.startTickTask(TickTask.ENTITIES); // RSMM
          this.field_72984_F.func_76320_a("global");
 +        WorldHelper.startTickTask(TickTask.GLOBAL_ENTITIES); // RSMM
  
@@ -606,7 +608,7 @@
          for (int i = 0; i < this.field_73007_j.size(); ++i)
          {
              Entity entity = this.field_73007_j.get(i);
-@@ -1346,6 +1488,7 @@
+@@ -1346,6 +1489,7 @@
              try
              {
                  ++entity.field_70173_aa;
@@ -614,7 +616,7 @@
                  entity.func_70071_h_();
              }
              catch (Throwable throwable2)
-@@ -1370,6 +1513,9 @@
+@@ -1370,6 +1514,9 @@
                  this.field_73007_j.remove(i--);
              }
          }
@@ -624,7 +626,7 @@
  
          this.field_72984_F.func_76318_c("remove");
          this.field_72996_f.removeAll(this.field_72997_g);
-@@ -1393,11 +1539,14 @@
+@@ -1393,11 +1540,14 @@
  
          this.field_72997_g.clear();
          this.func_184147_l();
@@ -639,7 +641,7 @@
              Entity entity3 = entity2.func_184187_bx();
  
              if (entity3 != null)
-@@ -1416,14 +1565,25 @@
+@@ -1416,14 +1566,25 @@
              {
                  try
                  {
@@ -670,7 +672,7 @@
                  }
              }
  
-@@ -1437,31 +1597,51 @@
+@@ -1437,31 +1598,51 @@
  
                  if (entity2.field_70175_ag && this.func_175680_a(l1, i2, true))
                  {
@@ -724,7 +726,7 @@
  
              if (!tileentity.func_145837_r() && tileentity.func_145830_o())
              {
-@@ -1471,12 +1651,15 @@
+@@ -1471,12 +1652,15 @@
                  {
                      try
                      {
@@ -746,7 +748,7 @@
                      }
                      catch (Throwable throwable)
                      {
-@@ -1490,16 +1673,26 @@
+@@ -1490,16 +1674,26 @@
  
              if (tileentity.func_145837_r())
              {
@@ -773,7 +775,7 @@
          this.field_147481_N = false;
          this.field_72984_F.func_76318_c("pendingBlockEntities");
  
-@@ -1528,9 +1721,12 @@
+@@ -1528,9 +1722,13 @@
  
              this.field_147484_a.clear();
          }
@@ -781,12 +783,13 @@
 +        CarpetProfiler.end_current_section();
  
          this.field_72984_F.func_76319_b();
++        WorldHelper.endTickTask(); // RSMM
          this.field_72984_F.func_76319_b();
 +        WorldHelper.endTickTask(); // RSMM
      }
  
      protected void func_184147_l()
-@@ -1602,11 +1798,16 @@
+@@ -1602,11 +1800,16 @@
  
              if (p_72866_1_.func_184218_aH())
              {
@@ -805,7 +808,7 @@
              }
          }
  
-@@ -1648,7 +1849,8 @@
+@@ -1648,7 +1851,8 @@
                  this.func_72964_e(p_72866_1_.field_70176_ah, p_72866_1_.field_70164_aj).func_76608_a(p_72866_1_, p_72866_1_.field_70162_ai);
              }
  
@@ -815,7 +818,7 @@
              {
                  p_72866_1_.field_70175_ag = false;
              }
-@@ -1670,7 +1872,11 @@
+@@ -1670,7 +1874,11 @@
                  }
                  else
                  {
@@ -828,7 +831,7 @@
                  }
              }
          }
-@@ -1689,7 +1895,8 @@
+@@ -1689,7 +1897,8 @@
          {
              Entity entity4 = list.get(j2);
  
@@ -838,7 +841,7 @@
              {
                  return false;
              }
-@@ -2153,6 +2360,16 @@
+@@ -2153,6 +2362,16 @@
                          {
                              this.field_72986_A.func_76090_f(this.field_73012_v.nextInt(168000) + 12000);
                          }
@@ -855,7 +858,7 @@
                      }
                      else
                      {
-@@ -2177,6 +2394,16 @@
+@@ -2177,6 +2396,16 @@
                          {
                              this.field_72986_A.func_76080_g(this.field_73012_v.nextInt(168000) + 12000);
                          }
@@ -872,7 +875,7 @@
                      }
                      else
                      {
-@@ -2225,7 +2452,9 @@
+@@ -2225,7 +2454,9 @@
      public void func_189507_a(BlockPos p_189507_1_, IBlockState p_189507_2_, Random p_189507_3_)
      {
          this.field_72999_e = true;
@@ -882,7 +885,7 @@
          this.field_72999_e = false;
      }
  
-@@ -2387,69 +2616,221 @@
+@@ -2387,69 +2618,221 @@
  
      public boolean func_180500_c(EnumSkyBlock p_180500_1_, BlockPos p_180500_2_)
      {
@@ -1128,7 +1131,7 @@
                              }
                          }
                      }
-@@ -2458,70 +2839,71 @@
+@@ -2458,70 +2841,71 @@
                  j2 = 0;
              }
  
@@ -1220,7 +1223,7 @@
  
      public boolean func_72955_a(boolean p_72955_1_)
      {
-@@ -2610,6 +2992,27 @@
+@@ -2610,6 +2994,27 @@
          int i3 = MathHelper.func_76143_f((p_175647_2_.field_72334_f + 2.0D) / 16.0D);
          List<T> list = Lists.<T>newArrayList();
  
@@ -1248,7 +1251,7 @@
          for (int j3 = j2; j3 < k2; ++j3)
          {
              for (int k3 = l2; k3 < i3; ++k3)
-@@ -2699,7 +3102,8 @@
+@@ -2699,7 +3104,8 @@
          IBlockState iblockstate1 = this.func_180495_p(p_190527_2_);
          AxisAlignedBB axisalignedbb = p_190527_3_ ? null : p_190527_1_.func_176223_P().func_185890_d(this, p_190527_2_);
  
@@ -1258,7 +1261,7 @@
          {
              return false;
          }
-@@ -3267,30 +3671,44 @@
+@@ -3267,30 +3673,44 @@
  
      public void func_175666_e(BlockPos p_175666_1_, Block p_175666_2_)
      {
@@ -1318,7 +1321,7 @@
      }
  
      public DifficultyInstance func_175649_E(BlockPos p_175649_1_)
-@@ -3361,4 +3779,132 @@
+@@ -3361,4 +3781,132 @@
      {
          return null;
      }

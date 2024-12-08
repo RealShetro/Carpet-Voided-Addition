@@ -37,7 +37,7 @@
 +
 +    // RSMM
 +    @Override
-+    public boolean isActive(World world, BlockPos pos, IBlockState state) {
++    public boolean rsmm$isActive(World world, BlockPos pos, IBlockState state) {
 +        return state.func_177229_b(field_176293_a);
 +    }
 +

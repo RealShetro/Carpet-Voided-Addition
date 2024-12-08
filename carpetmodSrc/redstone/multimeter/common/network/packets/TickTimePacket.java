@@ -6,30 +6,28 @@ import net.minecraft.nbt.NBTTagCompound;
 import redstone.multimeter.common.network.RSMMPacket;
 import redstone.multimeter.server.MultimeterServer;
 
-public class ServerTickPacket implements RSMMPacket {
-	
-	private long serverTime;
-	
-	public ServerTickPacket() {
-		
+public class TickTimePacket implements RSMMPacket {
+
+	private long gameTime;
+
+	public TickTimePacket() {
 	}
-	
-	public ServerTickPacket(long serverTime) {
-		this.serverTime = serverTime;
+
+	public TickTimePacket(long serverTime) {
+		this.gameTime = serverTime;
 	}
-	
+
 	@Override
 	public void encode(NBTTagCompound data) {
-		data.setLong("server time", serverTime);
+		data.setLong("game time", gameTime);
 	}
-	
+
 	@Override
 	public void decode(NBTTagCompound data) {
-		serverTime = data.getLong("server time");
+		gameTime = data.getLong("game time");
 	}
-	
+
 	@Override
-	public void execute(MultimeterServer server, EntityPlayerMP player) {
-		
+	public void handle(MultimeterServer server, EntityPlayerMP player) {
 	}
 }

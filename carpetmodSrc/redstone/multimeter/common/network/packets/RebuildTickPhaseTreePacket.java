@@ -6,29 +6,21 @@ import net.minecraft.nbt.NBTTagCompound;
 import redstone.multimeter.common.network.RSMMPacket;
 import redstone.multimeter.server.MultimeterServer;
 
-public class TeleportToMeterPacket implements RSMMPacket {
+public class RebuildTickPhaseTreePacket implements RSMMPacket {
 
-	private long id;
-
-	public TeleportToMeterPacket() {
-	}
-
-	public TeleportToMeterPacket(long id) {
-		this.id = id;
+	public RebuildTickPhaseTreePacket() {
 	}
 
 	@Override
 	public void encode(NBTTagCompound data) {
-		data.setLong("id", id);
 	}
 
 	@Override
 	public void decode(NBTTagCompound data) {
-		id = data.getLong("id");
 	}
 
 	@Override
 	public void handle(MultimeterServer server, EntityPlayerMP player) {
-		server.getMultimeter().teleportToMeter(player, id);
+		server.rebuildTickPhaseTree(player);
 	}
 }

@@ -18,11 +18,12 @@
  import net.minecraft.inventory.Container;
  import net.minecraft.inventory.ContainerHopper;
  import net.minecraft.inventory.IInventory;
-@@ -28,12 +32,21 @@
+@@ -28,12 +32,22 @@
  import net.minecraft.util.math.MathHelper;
  import net.minecraft.world.World;
  
 -public class TileEntityHopper extends TileEntityLockableLoot implements IHopper, ITickable
++import redstone.multimeter.helper.WorldHelper;
 +import net.minecraft.item.EnumDyeColor;
 +import carpet.helpers.TileEntityOptimizer.ILazyTileEntity;
 +import carpet.CarpetSettings;
@@ -41,7 +42,15 @@
      public static void func_189683_a(DataFixer p_189683_0_)
      {
          p_189683_0_.func_188258_a(FixTypes.BLOCK_ENTITY, new ItemStackDataLists(TileEntityHopper.class, new String[] {"Items"}));
-@@ -132,14 +145,44 @@
+@@ -114,6 +128,7 @@
+         if (this.field_145850_b != null && !this.field_145850_b.field_72995_K)
+         {
+             --this.field_145901_j;
++            rsmm$logActive(); // RSMM
+             this.field_190578_g = this.field_145850_b.func_82737_E();
+ 
+             if (!this.func_145888_j())
+@@ -132,14 +147,44 @@
              {
                  boolean flag = false;
  
@@ -91,7 +100,7 @@
                  }
  
                  if (flag)
-@@ -191,10 +234,42 @@
+@@ -191,10 +236,42 @@
  
      private boolean func_145883_k()
      {
@@ -134,7 +143,7 @@
              return false;
          }
          else
-@@ -203,6 +278,10 @@
+@@ -203,6 +280,10 @@
  
              if (this.func_174919_a(iinventory, enumfacing))
              {
@@ -145,7 +154,7 @@
                  return false;
              }
              else
-@@ -214,9 +293,13 @@
+@@ -214,9 +295,13 @@
                          ItemStack itemstack = this.func_70301_a(i).func_77946_l();
                          ItemStack itemstack1 = func_174918_a(this, iinventory, this.func_70298_a(i, 1), enumfacing);
  
@@ -160,7 +169,7 @@
                              return true;
                          }
  
-@@ -297,7 +380,10 @@
+@@ -297,7 +382,10 @@
  
      public static boolean func_145891_a(IHopper p_145891_0_)
      {
@@ -171,7 +180,7 @@
  
          if (iinventory != null)
          {
-@@ -305,6 +391,14 @@
+@@ -305,6 +393,14 @@
  
              if (func_174917_b(iinventory, enumfacing))
              {
@@ -186,7 +195,7 @@
                  return false;
              }
  
-@@ -333,6 +427,13 @@
+@@ -333,6 +429,13 @@
                      }
                  }
              }
@@ -200,7 +209,7 @@
          }
          else
          {
-@@ -352,6 +453,11 @@
+@@ -352,6 +455,11 @@
      {
          ItemStack itemstack = p_174915_1_.func_70301_a(p_174915_2_);
  
@@ -212,7 +221,7 @@
          if (!itemstack.func_190926_b() && func_174921_b(p_174915_1_, itemstack, p_174915_2_, p_174915_3_))
          {
              ItemStack itemstack1 = itemstack.func_77946_l();
-@@ -499,6 +605,14 @@
+@@ -499,6 +607,14 @@
          return func_145893_b(this.func_145831_w(), this.func_96107_aA() + (double)enumfacing.func_82601_c(), this.func_96109_aB() + (double)enumfacing.func_96559_d(), this.func_96108_aC() + (double)enumfacing.func_82599_e());
      }
  
@@ -227,7 +236,7 @@
      public static IInventory func_145884_b(IHopper p_145884_0_)
      {
          return func_145893_b(p_145884_0_.func_145831_w(), p_145884_0_.func_96107_aA(), p_145884_0_.func_96109_aB() + 1.0D, p_145884_0_.func_96108_aC());
-@@ -535,7 +649,8 @@
+@@ -535,7 +651,8 @@
  
          if (iinventory == null)
          {
@@ -237,7 +246,7 @@
  
              if (!list.isEmpty())
              {
-@@ -546,7 +661,7 @@
+@@ -546,7 +663,7 @@
          return iinventory;
      }
  
@@ -246,7 +255,20 @@
      {
          if (p_145894_0_.func_77973_b() != p_145894_1_.func_77973_b())
          {
-@@ -611,4 +726,15 @@
+@@ -584,9 +701,11 @@
+     private void func_145896_c(int p_145896_1_)
+     {
+         this.field_145901_j = p_145896_1_;
++        rsmm$logActive(); // RSMM
+     }
+ 
+-    private boolean func_145888_j()
++    // RSMM - change access from private to public
++    public boolean func_145888_j()
+     {
+         return this.field_145901_j > 0;
+     }
+@@ -611,4 +730,22 @@
      {
          return this.field_145900_a;
      }
@@ -260,5 +282,12 @@
 +    public void wakeUp(){
 +        this.pullSleeping = false;
 +        this.pushSleeping = false;
++    }
++
++    // RSMM
++    private void rsmm$logActive() {
++        if (CarpetSettings.redstoneMultimeter) {
++            WorldHelper.getMultimeter().logActive(field_145850_b, field_174879_c, !func_145888_j());
++        }
 +    }
  }

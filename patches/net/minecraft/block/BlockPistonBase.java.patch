@@ -138,11 +138,11 @@
 +        return 0;
 +    }
 +
-+    // RSMM - wrapped method
++    // RSMM - wrapped method to capture return value
 +    public boolean func_176318_b(World p_176318_1_, BlockPos p_176318_2_, EnumFacing p_176318_3_)
      {
 +        boolean powered = _shouldBeExtended(p_176318_1_, p_176318_2_, p_176318_3_);
-+        logPowered(p_176318_1_, p_176318_2_, powered); // RSMM
++        rsmm$logPowered(p_176318_1_, p_176318_2_, powered); // RSMM
 +        return powered;
 +    }
 +
@@ -309,7 +309,7 @@
 +                if (CarpetSettings.redstoneMultimeterLegacy) {
 +                    PistonPushEventDispatcher.dispatchEvent(p_176319_1_, blockpos3, enumfacing);
 +                }
-+                if (CarpetSettings.redstoneMultimeter && !p_176319_1_.field_72995_K) {
++                if (CarpetSettings.redstoneMultimeter) {
 +                    Multimeter multimeter = WorldHelper.getMultimeter();
 +
 +                    multimeter.logMoved(p_176319_1_, blockpos3, enumfacing);
@@ -354,19 +354,19 @@
 +
 +    // RSMM
 +    @Override
-+    public boolean logPoweredOnBlockUpdate() {
++    public boolean rsmm$logPoweredOnBlockUpdate() {
 +        return false;
 +    }
 +
 +    // RSMM
 +    @Override
-+    public boolean isPowered(World world, BlockPos pos, IBlockState state) {
++    public boolean rsmm$isPowered(World world, BlockPos pos, IBlockState state) {
 +        return func_176318_b(world, pos, state.func_177229_b(field_176387_N));
 +    }
 +
 +    // RSMM
 +    @Override
-+    public boolean isActive(World world, BlockPos pos, IBlockState state) {
++    public boolean rsmm$isActive(World world, BlockPos pos, IBlockState state) {
 +        return state.func_177229_b(field_176320_b);
 +    }
 +

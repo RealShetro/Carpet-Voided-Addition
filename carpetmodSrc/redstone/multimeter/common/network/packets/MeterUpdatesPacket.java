@@ -9,7 +9,6 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap.Entry;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagLong;
@@ -23,64 +22,85 @@ public class MeterUpdatesPacket implements RSMMPacket {
 	
 	private List<Long> removedMeters;
 	private Long2ObjectMap<MeterProperties> meterUpdates;
+	private List<Long> meters;
 	
 	public MeterUpdatesPacket() {
 		this.removedMeters = new ArrayList<>();
 		this.meterUpdates = new Long2ObjectOpenHashMap<>();
+		this.meters = new ArrayList<>();
 	}
 	
-	public MeterUpdatesPacket(List<Long> removedMeters, Map<Long, MeterProperties> updates) {
+	public MeterUpdatesPacket(List<Long> removedMeters, Map<Long, MeterProperties> updates, List<Long> meters) {
 		this.removedMeters = new ArrayList<>(removedMeters);
 		this.meterUpdates = new Long2ObjectOpenHashMap<>(updates);
+		this.meters = new ArrayList<>(meters);
 	}
 	
 	@Override
 	public void encode(NBTTagCompound data) {
-		NBTTagList ids = new NBTTagList();
-		NBTTagList list = new NBTTagList();
-		
-		for (int index = 0; index < removedMeters.size(); index++) {
-			long id = removedMeters.get(index);
-			
-			NBTTagLong nbt = new NBTTagLong(id);
-			ids.appendTag(nbt);
+		if (!removedMeters.isEmpty()) {
+			NBTTagList list = new NBTTagList();
+
+			for (int i = 0; i < removedMeters.size(); i++) {
+				list.appendTag(new NBTTagLong(removedMeters.get(i)));
+			}
+
+			data.setTag("removed", list);
 		}
-		for (Entry<MeterProperties> entry : meterUpdates.long2ObjectEntrySet()) {
-			long id = entry.getLongKey();
-			MeterProperties update = entry.getValue();
-			
-			NBTTagCompound nbt = update.toNbt();
-			nbt.setLong("id", id);
-			list.appendTag(nbt);
+		if (!meterUpdates.isEmpty()) {
+			NBTTagList list = new NBTTagList();
+
+			for (Entry<MeterProperties> entry : meterUpdates.long2ObjectEntrySet()) {
+				long id = entry.getLongKey();
+				MeterProperties update = entry.getValue();
+
+				NBTTagCompound nbt = update.toNbt();
+				nbt.setLong("id", id);
+				list.appendTag(nbt);
+			}
+
+			data.setTag("updates", list);
 		}
-		
-		data.setTag("removed meters", ids);
-		data.setTag("meter updates", list);
+		if (!meters.isEmpty()) {
+			NBTTagList list = new NBTTagList();
+			for (int i = 0; i < meters.size(); i++) {
+				list.appendTag(new NBTTagLong(meters.get(i)));
+			}
+			data.setTag("meters", list);
+		}
 	}
 	
 	@Override
 	public void decode(NBTTagCompound data) {
-		NBTTagList ids = data.getTagList("removed meters", NbtUtils.TYPE_LONG);
-		NBTTagList list = data.getTagList("meter updates", NbtUtils.TYPE_COMPOUND);
-		
-		for (int index = 0; index < ids.tagCount(); index++) {
-			NBTBase nbt = ids.get(index);
-			
-			if (nbt.getId() == NbtUtils.TYPE_LONG) {
-				removedMeters.add(((NBTTagLong)nbt).getLong());
+		if (data.hasKey("removed")) {
+			NBTTagList ids = data.getTagList("removed", NbtUtils.TYPE_LONG);
+			for (int i = 0; i < ids.tagCount(); i++) {
+				NBTTagLong nbt = (NBTTagLong)ids.get(i);
+				long id = nbt.getLong();
+				removedMeters.add(id);
 			}
 		}
-		for (int index = 0; index < list.tagCount(); index++) {
-			NBTTagCompound nbt = list.getCompoundTagAt(index);
-			
-			long id = nbt.getLong("id");
-			MeterProperties update = MeterProperties.fromNbt(nbt);
-			meterUpdates.put(id, update);
+		if (data.hasKey("updates")) {
+			NBTTagList updates = data.getTagList("updates", NbtUtils.TYPE_COMPOUND);
+			for (int i = 0; i < updates.tagCount(); i++) {
+				NBTTagCompound nbt = updates.getCompoundTagAt(i);
+				long id = nbt.getLong("id");
+				MeterProperties update = MeterProperties.fromNbt(nbt);
+				meterUpdates.put(id, update);
+			}
+		}
+		if (data.hasKey("meters")) {
+			NBTTagList ids = data.getTagList("meters", NbtUtils.TYPE_LONG);
+			for (int i = 0; i < ids.tagCount(); i++) {
+				NBTTagLong nbt = (NBTTagLong)ids.get(i);
+				long id = nbt.getLong();
+				meters.add(id);
+			}
 		}
 	}
 	
 	@Override
-	public void execute(MultimeterServer server, EntityPlayerMP player) {
+	public void handle(MultimeterServer server, EntityPlayerMP player) {
 		
 	}
 }

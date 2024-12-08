@@ -66,7 +66,7 @@
 +        /* end */
          boolean flag1 = ((Boolean)p_189540_1_.func_177229_b(field_176440_b)).booleanValue();
  
-+        logPowered(p_189540_2_, p_189540_3_, flag); // RSMM
++        rsmm$logPowered(p_189540_2_, p_189540_3_, flag); // RSMM
 +
          if (flag && !flag1)
          {
@@ -98,19 +98,19 @@
 +
 +    // RSMM
 +    @Override
-+    public boolean logPoweredOnBlockUpdate() {
++    public boolean rsmm$logPoweredOnBlockUpdate() {
 +        return false;
 +    }
 +
 +    // RSMM
 +    @Override
-+    public boolean isPowered(World world, BlockPos pos, IBlockState state) {
++    public boolean rsmm$isPowered(World world, BlockPos pos, IBlockState state) {
 +        return world.func_175640_z(pos) || (CarpetSettings.quasiConnectivity && world.func_175640_z(pos.func_177984_a()));
 +    }
 +
 +    // RSMM
 +    @Override
-+    public boolean isActive(World world, BlockPos pos, IBlockState state) {
++    public boolean rsmm$isActive(World world, BlockPos pos, IBlockState state) {
 +        return state.func_177229_b(field_176440_b);
 +    }
  }
